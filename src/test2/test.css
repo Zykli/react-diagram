@@ -1,0 +1,20 @@
+.rect {
+    
+}
+
+.rect:hover {
+    /* stroke: #f00; */
+    pointer-events: none;
+}
+
+.path:hover {
+    /* stroke: #f00; */
+}
+
+.path-hide {
+    stroke: rgba(255, 0, 0, 0);
+}
+
+.path-show {
+    stroke: rgba(255, 0, 0, 0.5);
+}
