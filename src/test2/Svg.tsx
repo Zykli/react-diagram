@@ -95,14 +95,6 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
         portsRef.current = newData;
     }, []);
 
-    useEffect(() => {
-        console.log('ports', ports);
-    }, [ports]);
-
-    useEffect(() => {
-        console.log('Viewer', Viewer.current);
-    }, [Viewer]);
-
     return (
         <PortsContext.Provider value={{ports, setPorts}}>
             <Context.Provider value={value}>
@@ -163,6 +155,7 @@ export const SVGtest2: FC<{
     const itsRef = useRef(its);
 
     useEffect(() => {
+        console.log(its);
         itsRef.current = its;
     }, [its]);
 

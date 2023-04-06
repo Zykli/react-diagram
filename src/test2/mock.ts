@@ -20,93 +20,75 @@ type item = {
 const itemsWidth = 200;
 
 export const items: {[id: item['id']]: item} = {
-    '1': {
-        id: '1',
-        type: 'rect',
-        x: 20,
-        y: 20,
+    "1": {
+        id: "1",
+        type: "rect",
+        x: 21,
+        y: 237,
         height: 225,
-        width: itemsWidth,
+        width: 200,
         input: null,
-        output: '2',
-        items: [
-            {
-                id: '7',
-                type: 'rect',
-                x: 20,
-                y: 20,
-                height: 100,
-                width: itemsWidth,
-                input: null,
-                output: null,
-                outputs: [
-                    {
-                        id: '1',
-                        connected: null
-                    }
-                ]
-            }
-        ],
+        output: "2",
         outputs: [
             {
-                id: '1',
+                id: "1",
                 connected: null
             },
             {
-                id: '2',
-                connected: '4'
+                id: "2",
+                connected: "4"
             },
             {
-                id: '3',
-                connected: '4'
+                id: "3",
+                connected: "4"
             },
             {
-                id: '4',
-                connected: '3'
+                id: "4",
+                connected: "3"
             },
             {
-                id: '5',
+                id: "5",
                 connected: null
             }
         ]
     },
-    '2': {
-        id: '2',
-        type: 'rect',
+    "2": {
+        id: "2",
+        type: "rect",
         x: 300,
         y: 70,
         height: 125,
-        width: itemsWidth,
+        width: 200,
         input: null,
-        output: '4',
+        output: "4",
         outputs: [
             {
-                id: '1',
+                id: "1",
                 connected: null
             },
             {
-                id: '2',
+                id: "2",
                 connected: null
             }
         ]
     },
-    '3': {
-        id: '3',
-        type: 'rect',
-        x: 600,
-        y: 70,
+    "3": {
+        id: "3",
+        type: "rect",
+        x: 477,
+        y: 507,
         height: 100,
-        width: itemsWidth,
+        width: 200,
         input: null,
         output: null
     },
-    '4': {
-        id: '4',
-        type: 'rect',
-        x: 600,
-        y: 150,
+    "4": {
+        id: "4",
+        type: "rect",
+        x: 569,
+        y: 327,
         height: 100,
-        width: itemsWidth,
+        width: 200,
         input: null,
         output: null
     }
