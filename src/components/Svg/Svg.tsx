@@ -117,7 +117,6 @@ export const SVGtest2: FC<{
     const [ initedNewPath, setInitedNewPath ] = useState('');
     const newPathRef = useRef(initedNewPath);
     useEffect(() => {
-        console.log('initedNewPath', initedNewPath);
         newPathRef.current = initedNewPath;
     }, [initedNewPath]);
 
@@ -167,7 +166,6 @@ export const SVGtest2: FC<{
     }, []);
 
     const onMouseUp = useCallback((e: MouseEvent) => {
-        console.log('globalMouseUp');
         const fromPortId = newPathRef.current;
         const fromPort = portsRef.current[fromPortId];
         setInitedNewPath('');
