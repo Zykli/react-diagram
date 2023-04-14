@@ -18,3 +18,7 @@
 .path-show {
     stroke: rgba(255, 0, 0, 0.5);
 }
+
+.path-info {
+    pointer-events: none;
+}

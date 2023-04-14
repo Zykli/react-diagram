@@ -2,6 +2,7 @@ import React, { FC, SVGAttributes, useCallback, useContext, useEffect, useMemo, 
 import ClickAwayListener from 'react-click-away-listener';
 import { PortsContext } from "../../contexts/ports";
 import { PemovePath } from "../RemovePath";
+import { getInputId } from "../../utils/utils";
 
 const rectsOffset = 20;
 
@@ -65,6 +66,10 @@ export const Path: FC<Props> = ({
 
     const hideRemoveButton = useCallback(() => setShowRemove(false), []);
 
+    const isInfoPath = useMemo(() => {
+        return toPort === getInputId('cursor');
+    }, [toPort]);
+
     return (
         <ClickAwayListener onClickAway={(e) => {
             showRemove && hideRemoveButton()
@@ -76,13 +81,13 @@ export const Path: FC<Props> = ({
                 }}
             >                
                 <path
-                    className={cls}
+                    className={`${cls}`}
                     d={data.d}
                     fill="none"
                     strokeWidth={8}
                     {...props}
-                    onMouseEnter={() => setCls('path-show')}
-                    onMouseOut={() => setCls('path-hide')}
+                    onMouseEnter={() => !isInfoPath && setCls('path-show')}
+                    onMouseOut={() => !isInfoPath && setCls('path-hide')}
                 />
                 <path
                     className="path"
@@ -91,8 +96,8 @@ export const Path: FC<Props> = ({
                     strokeWidth={3}
                     stroke="#7c7c7c"
                     {...props}
-                    onMouseEnter={() => setCls('path-show')}
-                    onMouseOut={() => setCls('path-hide')}
+                    onMouseEnter={() => !isInfoPath && setCls('path-show')}
+                    onMouseOut={() => !isInfoPath && setCls('path-hide')}
                 />
                 {
                     showRemove &&

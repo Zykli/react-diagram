@@ -1,4 +1,5 @@
 import { createContext, useContext, useRef } from "react";
+import { getInputId } from "../utils/utils";
 
 export type Ports = {
     [key: string]: {
@@ -16,7 +17,17 @@ export const initialPorts: {
     ports: Ports,
     setPorts: (newPorts: Ports) => void;
 } = {
-    ports: {},
+    ports: {
+        [getInputId('cursor')]: {
+            connected: null,
+            height: 10,
+            id: getInputId('cursor'),
+            itemId: 'cursor',
+            width: 10,
+            x: 0,
+            y: 0
+        }
+    },
     setPorts: () => {}
 };
 

@@ -7,8 +7,9 @@ import { Path } from "../Path";
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
 import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
 import { items } from "../../test2/mock";
-import { getDataFromId } from "../../utils/utils";
+import { convertXYtoViewPort, getDataFromId, getInputId } from "../../utils/utils";
 import { Item } from "../Item";
+import { Port } from "../Port";
 
 export const SVG: FC<ComponentProps<typeof SVGtest2>> = ({
     ...props
@@ -55,6 +56,8 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
                     // onZoom={e => console.log('zoom')}
                     // onPan={e => console.log('pan')}
                     // onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
+                    detectAutoPan={false}
+                    disableDoubleClickZoomWithToolAuto={false}
                     customToolbar={() => <></>}
                     customMiniature={() => { return <></> }}
                     style={{ margin: '0 auto' }}
@@ -99,24 +102,24 @@ export const SVGtest2: FC<{
 
     const [ its, setIts ] = useState(items);
     const itsRef = useRef(its);
-
     useEffect(() => {
         console.log('its', its);
         itsRef.current = its;
     }, [its]);
-
-    const [ pathes, setPathes ] = useState<{[id: string]: string}>({});
-    const pathesRef = useRef(pathes);
-
-    useEffect(() => {
-        pathesRef.current = pathes;
-    }, [pathes]);
     
     const { ports, setPorts } = useContext(PortsContext);
     const portsRef = useRef(ports);
     useEffect(() => {
+        console.log('ports', ports);
         portsRef.current = ports;
     }, [ports]);
+
+    const [ initedNewPath, setInitedNewPath ] = useState('');
+    const newPathRef = useRef(initedNewPath);
+    useEffect(() => {
+        console.log('initedNewPath', initedNewPath);
+        newPathRef.current = initedNewPath;
+    }, [initedNewPath]);
 
     const removePath = useCallback<ComponentProps<typeof Path>['onRemove']>((from, to) => {
         const portsDatas = [ getDataFromId(from), getDataFromId(to) ];
@@ -137,13 +140,111 @@ export const SVGtest2: FC<{
             }
             return item;
         });
+        setPorts({
+            ...fromPairs(toPairs(portsRef.current).filter(el => [from, to].includes(el[0])).map((el) => [ el[0], { ...el[1], connected: null } ]))
+        });
         setIts({
             ...itsRef.current,
             ...keyBy(itemsToChange, 'id')
         });
+    }, []);
+    
+    const onMouseMove = useCallback((e: MouseEvent) => {
+        const mouseX = e.pageX;
+        const mouseY = e.pageY;
+        let coords = convertXYtoViewPort(mouseX, mouseY);
+        if(!coords) return ;
+        const newX = coords.x;
+        const newY = coords.y;
+        const cursorPort = portsRef.current[getInputId('cursor')];
         setPorts({
-            ...fromPairs(toPairs(portsRef.current).filter(el => [from, to].includes(el[0])).map((el) => [ el[0], { ...el[1], connected: null } ]))
+            [getInputId('cursor')]: {
+                ...cursorPort,
+                x: newX - cursorPort.width / 2,
+                y: newY - cursorPort.height / 2
+            }
         });
+    }, []);
+
+    const onMouseUp = useCallback((e: MouseEvent) => {
+        console.log('globalMouseUp');
+        const fromPortId = newPathRef.current;
+        const fromPort = portsRef.current[fromPortId];
+        setInitedNewPath('');
+        setPorts({
+            [fromPort.id]: {
+                ...fromPort,
+                connected: null
+            }
+        });
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+    }, []);
+
+    const onPortMouseDown: ComponentProps<typeof Item>['onPortMouseDown'] = useCallback((portId, e) => {
+        const fromPort = portsRef.current[portId];
+        const fromPortData = getDataFromId(portId.toString());
+        if(!fromPort.connected && fromPortData.portType !== 'input') {
+            const mouseX = e.pageX;
+            const mouseY = e.pageY;
+            let coords = convertXYtoViewPort(mouseX, mouseY);
+            const newX = coords?.x || 0;
+            const newY = coords?.y || 0;
+            const cursorPort = portsRef.current[getInputId('cursor')];
+            setPorts({
+                [getInputId('cursor')]: {
+                    ...cursorPort,
+                    x: newX - cursorPort.width / 2,
+                    y: newY - cursorPort.height / 2
+                },
+                [fromPort.id]: {
+                    ...fromPort,
+                    connected: getInputId('cursor')
+                }
+            });
+            setInitedNewPath(portId.toString());
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        }
+    }, []);
+
+    const onPortMouseUp: ComponentProps<typeof Item>['onPortMouseUp'] = useCallback((portId) => {
+        if(newPathRef.current && newPathRef.current !== portId) {
+            const fromPort = newPathRef.current;
+            setPorts({
+                ...fromPairs(
+                    toPairs(portsRef.current)
+                        .filter(el => [fromPort].includes(el[0]))
+                        .map((el) => [ el[0], { ...el[1], connected: portId.toString() } ])
+                    )   
+            });
+            const fromPortData = getDataFromId(newPathRef.current);
+            const toPortData = getDataFromId(portId.toString());
+            const itemsToChange = [ fromPortData ].map(portData => {
+                const item = cloneDeep(itsRef.current[portData.itemId]);
+                if(portData.portId) {
+                    item.outputs = item.outputs?.map(el => {
+                        if(el.id === portData.portId) {
+                            return {
+                                ...el,
+                                connected: toPortData.itemId
+                            };
+                        }
+                        return el;
+                    })
+                } else {
+                    item[portData.portType] = toPortData.itemId;
+                }
+                return item;
+            });
+            setIts({
+                ...itsRef.current,
+                ...keyBy(itemsToChange, 'id')
+            });
+            setInitedNewPath('');
+        }
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
     }, []);
 
     return (
@@ -154,16 +255,14 @@ export const SVGtest2: FC<{
                     <Item
                         key={item.id}
                         item={item}
-                        onMove={(newItem) => {
-                            // setMoveItem(newItem);
-                        }}
                         onChange={(newItem) => {
                             setIts({
                                 ...itsRef.current,
                                 [newItem.id]: newItem
                             });
-                            // setMoveItem(null);
                         }}
+                        onPortMouseDown={onPortMouseDown}
+                        onPortMouseUp={onPortMouseUp}
                     />
                 );
             })
@@ -171,7 +270,9 @@ export const SVGtest2: FC<{
             <g id='pathesRoot'>
                 {
                     toPairs(ports).map(([ _, port ]) => {
-                        if(!port.connected) return null;
+                        if(!port.connected) {
+                            return null;
+                        }
                         return <Path
                             key={`${port.id}/${port.connected}`}
                             fromPort={port.id}

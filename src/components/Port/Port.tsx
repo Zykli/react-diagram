@@ -1,7 +1,9 @@
 import React, { FC, SVGAttributes, useContext, useEffect } from "react";
 import { Ports, PortsContext } from "../../contexts/ports";
+import './Port.css';
 
 type Props = SVGAttributes<SVGRectElement> & {
+    gProps?: SVGAttributes<SVGGElement>;
     portData: Ports[keyof Ports],
     id: string;
 };
@@ -13,6 +15,7 @@ export const Port: FC<Props> = ({
     width,
     x,
     y,
+    gProps,
     ...props
 }) => {
 
@@ -28,11 +31,21 @@ export const Port: FC<Props> = ({
     }, [portData.x, portData.y]);
 
     return (
-        <g>
+        <g
+            {...gProps}
+            onMouseDown={(e) => {
+                e.stopPropagation();
+                gProps?.onMouseDown?.(e);
+            }}
+            onMouseUp={(e) => {
+                e.stopPropagation();
+                gProps?.onMouseUp?.(e);
+            }}
+        >
             <svg y={5}>
                 <rect
                     id={id}
-                    className="rectOutput"
+                    className="Port"
                     width={width || 10}
                     height={height || 10}
                     x={x || 0}

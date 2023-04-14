@@ -3,16 +3,19 @@ import { items } from '../../test2/mock';
 import { ZoomContext } from '../../contexts/zoom';
 import { convertXYtoViewPort, getInputId, getOutputId } from '../../utils/utils';
 import { Port } from '../Port';
+import { Ports } from '../../contexts/ports';
 
 
 export const Item: FC<{
     item: typeof items[keyof typeof items],
-    onMove: (item: typeof items[keyof typeof items] | null) => void;
     onChange: (item: typeof items[keyof typeof items]) => void;
+    onPortMouseDown: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
+    onPortMouseUp: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
 }> = ({
     item,
-    onMove,
-    onChange
+    onChange,
+    onPortMouseDown,
+    onPortMouseUp
 }) => {
 
     const [state, setState] = useState({x: item.x, y: item.y});
@@ -35,12 +38,7 @@ export const Item: FC<{
             x: newX,
             y: newY
         });
-        onMove({
-            ...item,
-            x: newX,
-            y: newY
-        });
-    }, [onMove]);
+    }, []);
 
     const onMouseUp = useCallback((e: MouseEvent) => {
         window.removeEventListener('mousemove', onMouseMove);
@@ -53,7 +51,7 @@ export const Item: FC<{
             x: !isNaN(Number(newX)) ? Number(newX): item.x,
             y: !isNaN(Number(newY)) ? Number(newY): item.y
         });
-    }, [onMove, onChange]);
+    }, [onChange]);
 
     const onMouseDown = useCallback<React.MouseEventHandler<SVGRectElement>>((e) => {
         e.stopPropagation();
@@ -112,6 +110,14 @@ export const Item: FC<{
                         onMouseDown={onMouseDown}
                     />
                     <Port
+                        gProps={{
+                            onMouseDown: (e) => {
+                                onPortMouseDown(getInputId(item.id), e)
+                            },
+                            onMouseUp: (e) => {
+                                onPortMouseUp(getInputId(item.id), e)
+                            }
+                        }}
                         portData={{
                             x: state.x + 0,
                             y: state.y + 0,
@@ -128,6 +134,14 @@ export const Item: FC<{
                         y={0}
                     />
                     <Port
+                        gProps={{
+                            onMouseDown: (e) => {
+                                onPortMouseDown(getOutputId(item.id), e)
+                            },
+                            onMouseUp: (e) => {
+                                onPortMouseUp(getOutputId(item.id), e)
+                            }
+                        }}
                         portData={{
                             x: state.x + item.width - 10,
                             y: state.y + 0,
@@ -181,6 +195,14 @@ export const Item: FC<{
                                             strokeWidth={1}
                                         />
                                         <Port
+                                            gProps={{
+                                                onMouseDown: (e) => {
+                                                    onPortMouseDown(getOutputId(item.id, el.id), e)
+                                                },
+                                                onMouseUp: (e) => {
+                                                    onPortMouseUp(getOutputId(item.id, el.id), e)
+                                                }
+                                            }}
                                             portData={{
                                                 x: state.x + 10 + item.width - 20 - 10,
                                                 y: state.y + 50 + idx * 30 + 20,
