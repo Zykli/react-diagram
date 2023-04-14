@@ -91,5 +91,45 @@ export const items: {[id: item['id']]: item} = {
         width: itemsWidth,
         input: null,
         output: null
+    },
+    "5": {
+        id: "5",
+        type: "rect",
+        x: 569,
+        y: 327,
+        height: 100,
+        width: itemsWidth,
+        input: null,
+        output: null
+    },
+    "6": {
+        id: "6",
+        type: "rect",
+        x: 569,
+        y: 327,
+        height: 100,
+        width: itemsWidth,
+        input: null,
+        output: null
+    },
+    "7": {
+        id: "7",
+        type: "rect",
+        x: 569,
+        y: 327,
+        height: 100,
+        width: itemsWidth,
+        input: null,
+        output: null
+    },
+    "8": {
+        id: "8",
+        type: "rect",
+        x: 569,
+        y: 327,
+        height: 100,
+        width: itemsWidth,
+        input: null,
+        output: null
     }
 };

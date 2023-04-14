@@ -158,7 +158,9 @@ export const Item: FC<{
                         y={0}
                     />
                 </svg>
-                <g>
+                <g
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
                     <rect
                         className={'rect'}
                         ref={ref}
@@ -171,7 +173,6 @@ export const Item: FC<{
                         fill="#fff"
                         stroke="#000"
                         strokeWidth={1}
-                        onMouseDown={(e) => e.stopPropagation()}
                     />
                     {
                         item.outputs?.map((el, idx) => {

@@ -10,6 +10,7 @@ import { items } from "../../test2/mock";
 import { convertXYtoViewPort, getDataFromId, getInputId } from "../../utils/utils";
 import { Item } from "../Item";
 import { Port } from "../Port";
+import { useWindowSize } from '@react-hook/window-size';
 
 export const SVG: FC<ComponentProps<typeof SVGtest2>> = ({
     ...props
@@ -42,57 +43,44 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
         portsRef.current = newData;
     }, []);
 
+    const [width, height] = useWindowSize({initialWidth: 800, initialHeight: 800});
+
     return (
         <PortsContext.Provider value={{ports, setPorts}}>
             <ZoomContext.Provider value={value}>
-                <ReactSVGPanZoom 
-                    ref={Viewer}
-                    height={800}
-                    width={800}
-                    tool={'auto'}
-                    onChangeTool={() => {}}
-                    value={value}
-                    onChangeValue={(val) => setValue(val)}
-                    // onZoom={e => console.log('zoom')}
-                    // onPan={e => console.log('pan')}
-                    // onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
-                    detectAutoPan={false}
-                    disableDoubleClickZoomWithToolAuto={false}
-                    customToolbar={() => <></>}
-                    customMiniature={() => { return <></> }}
-                    style={{ margin: '0 auto' }}
-                    // background="#fff"
+                <div 
+                    className={'ReactSVGPanZoom'}
                 >
-                    <svg id={'svgroot2'} width={800} height={800}>
-                        <SVGtest2
-                            {...props}
-                        />
-                    </svg>
-                </ReactSVGPanZoom>
+                    <ReactSVGPanZoom 
+                        ref={Viewer}
+                        height={600}
+                        width={width - 2}
+                        tool={'auto'}
+                        onChangeTool={() => {}}
+                        value={value}
+                        onChangeValue={(val) => setValue(val)}
+                        // onZoom={e => console.log('zoom')}
+                        // onPan={e => console.log('pan')}
+                        // onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
+                        detectAutoPan={false}
+                        disableDoubleClickZoomWithToolAuto={false}
+                        customToolbar={() => <></>}
+                        customMiniature={() => { return <></> }}
+                        style={{ margin: '0 auto' }}
+                        background="#fff"
+                        SVGBackground="transparent"
+                    >
+                        <svg id={'svgroot2'} width={800} height={800}>
+                            <SVGtest2
+                                {...props}
+                            />
+                        </svg>
+                    </ReactSVGPanZoom>
+                </div>
             </ZoomContext.Provider>
         </PortsContext.Provider>
     )
 };
-
-// if (this.$refs['port-' + port.id]) {
-//     let node = port.node
-//     let x
-//     let y
-//     if (port.type === 'in') {
-//         x = node.x + 10
-//         y = node.y + port.y + 64
-//     } else {
-//         x = node.x + node.width + 10
-//         y = node.y + port.y + 64
-//     }
-
-//     return { x, y }
-// } else {
-//     console.warn(
-//         `port "${port.id}" not found. you must call this method after the first render`
-//     )
-//     return 0
-// }
 
 export const SVGtest2: FC<{
     items: typeof items;

@@ -15,18 +15,6 @@ root.render(
     <SVGWithZoom
       items={items}
     />
-    {/* <SVG
-      items={items}
-      relations={relationsWithInOut}
-    /> */}
-  {/* <SvgTest 
-    items={items}
-    relations={relations}
-  />
-  <SVGRender
-    items={items}
-    relations={relations}
-  /> */}
   {/* <App /> */}
   </div>
   // </React.StrictMode>
