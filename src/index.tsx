@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { SVG, SVGWithZoom, SVGtest2 } from './test2/Svg';
+import { SVG, SVGWithZoom, SVGtest2 } from './components/Svg';
 import { items } from './test2/mock';
 
 const root = ReactDOM.createRoot(

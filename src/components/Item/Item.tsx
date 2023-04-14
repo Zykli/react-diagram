@@ -1,8 +1,8 @@
 import React, { FC, createRef, useCallback, useContext, useRef, useState } from 'react';
-import { items } from './mock';
-import { Port } from './Port';
-import { Context } from './Svg';
-import { convertXYtoViewPort, getInputId, getOutputId } from './utils';
+import { items } from '../../test2/mock';
+import { ZoomContext } from '../../contexts/zoom';
+import { convertXYtoViewPort, getInputId, getOutputId } from '../../utils/utils';
+import { Port } from '../Port';
 
 
 export const Item: FC<{
@@ -21,7 +21,7 @@ export const Item: FC<{
     const svgRef = createRef<SVGSVGElement>();
     const offsets = useRef([0, 0]);
 
-    const ZoomerContext = useContext(Context);
+    const ZoomerContext = useContext(ZoomContext);
 
     const onMouseMove = useCallback((e: MouseEvent) => {
         const [offsetX, offsetY] = offsets.current;

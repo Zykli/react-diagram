@@ -1,5 +1,5 @@
 import React, { FC, SVGAttributes, useContext, useEffect } from "react";
-import { Ports, PortsContext } from "./Svg";
+import { Ports, PortsContext } from "../../contexts/ports";
 
 type Props = SVGAttributes<SVGRectElement> & {
     portData: Ports[keyof Ports],

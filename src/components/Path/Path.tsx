@@ -1,9 +1,7 @@
 import React, { FC, SVGAttributes, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import ReactDOM from 'react-dom'
-import { Connector } from "./mock";
-import { PortsContext } from "./Svg";
 import ClickAwayListener from 'react-click-away-listener';
-import { PemovePath } from "../RemovePath/RemovePath";
+import { PortsContext } from "../../contexts/ports";
+import { PemovePath } from "../RemovePath";
 
 const rectsOffset = 20;
 

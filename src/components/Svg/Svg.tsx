@@ -1,12 +1,14 @@
 import { cloneDeep, fromPairs, keyBy, toPairs } from "lodash";
 import React, { ComponentProps, FC, createContext, createRef, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { items } from "./mock";
 import { Value, ReactSVGPanZoom } from 'react-svg-pan-zoom';
 
 import './test.css';
-import { Path } from "./Path";
-import { Item } from "./Item";
-import { getDataFromId } from "./utils";
+import { Path } from "../Path";
+import { ZoomContext, initialZoom } from "../../contexts/zoom";
+import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
+import { items } from "../../test2/mock";
+import { getDataFromId } from "../../utils/utils";
+import { Item } from "../Item";
 
 export const SVG: FC<ComponentProps<typeof SVGtest2>> = ({
     ...props
@@ -21,70 +23,13 @@ export const SVG: FC<ComponentProps<typeof SVGtest2>> = ({
     )
 };
 
-const initialValue: Value = {
-    SVGHeight: 400,
-    SVGWidth: 800,
-    a: 1,
-    b: 0,
-    c: 0,
-    d: 1,
-    e: 0,
-    endX: null,
-    endY: null,
-    f: 0,
-    focus: false,
-    miniatureOpen: false,
-    mode: "idle",
-    startX: null,
-    startY: null,
-    version: 2,
-    viewerHeight: 400,
-    viewerWidth: 800
-};
-
-export const Context = createContext(initialValue);
-
-export type Ports = {
-    [key: string]: {
-        x: number;
-        y: number;
-        itemId: string;
-        id: string;
-        width: number;
-        height: number;
-        connected: string | null;
-    },
-}
-
-export const initialPorts: {
-    ports: Ports,
-    setPorts: (newPorts: Ports) => void;
-} = {
-    ports: {},
-    setPorts: () => {}
-};
-
-export const PortsContext = createContext(initialPorts);
-
-export const usePortsContext = () => {
-    const { ports, setPorts: setPortsState } = useContext(PortsContext);
-    const setPorts = useRef(setPortsState);
-    return {
-        ports,
-        setPorts: setPorts.current 
-    }
-};
-
-
-export const PathesContext = createContext({});
-
 export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
     ...props
 }) => {
 
     const Viewer = useRef(null);
 
-    const [value, setValue] = useState<Value>(initialValue);
+    const [value, setValue] = useState<Value>(initialZoom);
     const [ports, setPortsState] = useState<typeof initialPorts['ports']>(initialPorts.ports);
     const portsRef = useRef(ports);
     const setPorts = useCallback((newPorts: Ports) => {
@@ -98,7 +43,7 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
 
     return (
         <PortsContext.Provider value={{ports, setPorts}}>
-            <Context.Provider value={value}>
+            <ZoomContext.Provider value={value}>
                 <ReactSVGPanZoom 
                     ref={Viewer}
                     height={800}
@@ -121,7 +66,7 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
                         />
                     </svg>
                 </ReactSVGPanZoom>
-            </Context.Provider>
+            </ZoomContext.Provider>
         </PortsContext.Provider>
     )
 };
