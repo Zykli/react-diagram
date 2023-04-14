@@ -1,11 +1,12 @@
-import { flatten, flattenDeep, fromPairs, toPairs } from "lodash";
+import { cloneDeep, fromPairs, keyBy, toPairs } from "lodash";
 import React, { ComponentProps, FC, createContext, createRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { items } from "./mock";
-import { Value, ReactSVGPanZoom, TOOL_NONE, fitSelection, zoomOnViewerCenter, fitToViewer } from 'react-svg-pan-zoom';
+import { Value, ReactSVGPanZoom } from 'react-svg-pan-zoom';
 
 import './test.css';
-import { PathTest, PathTest2 } from "./Path";
-import { RectTest } from "./Item";
+import { Path } from "./Path";
+import { Item } from "./Item";
+import { getDataFromId } from "./utils";
 
 export const SVG: FC<ComponentProps<typeof SVGtest2>> = ({
     ...props
@@ -155,7 +156,7 @@ export const SVGtest2: FC<{
     const itsRef = useRef(its);
 
     useEffect(() => {
-        console.log(its);
+        console.log('its', its);
         itsRef.current = its;
     }, [its]);
 
@@ -166,14 +167,46 @@ export const SVGtest2: FC<{
         pathesRef.current = pathes;
     }, [pathes]);
     
-    const { ports,  } = useContext(PortsContext);
+    const { ports, setPorts } = useContext(PortsContext);
+    const portsRef = useRef(ports);
+    useEffect(() => {
+        portsRef.current = ports;
+    }, [ports]);
+
+    const removePath = useCallback<ComponentProps<typeof Path>['onRemove']>((from, to) => {
+        const portsDatas = [ getDataFromId(from), getDataFromId(to) ];
+        const itemsToChange = portsDatas.map(portData => {
+            const item = cloneDeep(itsRef.current[portData.itemId]);
+            if(portData.portId) {
+                item.outputs = item.outputs?.map(el => {
+                    if(el.id === portData.portId) {
+                        return {
+                            ...el,
+                            connected: null
+                        };
+                    }
+                    return el;
+                })
+            } else {
+                item[portData.portType] = null;
+            }
+            return item;
+        });
+        setIts({
+            ...itsRef.current,
+            ...keyBy(itemsToChange, 'id')
+        });
+        setPorts({
+            ...fromPairs(toPairs(portsRef.current).filter(el => [from, to].includes(el[0])).map((el) => [ el[0], { ...el[1], connected: null } ]))
+        });
+    }, []);
 
     return (
         <g id={'viewport'}>
         {
             toPairs(its).map(([ _, item ]) => {
                 return (
-                    <RectTest
+                    <Item
                         key={item.id}
                         item={item}
                         onMove={(newItem) => {
@@ -194,11 +227,11 @@ export const SVGtest2: FC<{
                 {
                     toPairs(ports).map(([ _, port ]) => {
                         if(!port.connected) return null;
-                        return <PathTest2
-                            key={port.id}
+                        return <Path
+                            key={`${port.id}/${port.connected}`}
                             fromPort={port.id}
                             toPort={port.connected}
-                            connected={null}
+                            onRemove={removePath}
                         />
                     })
                 }

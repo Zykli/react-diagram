@@ -1,12 +1,11 @@
-import React, { FC, createRef, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, createRef, useCallback, useContext, useRef, useState } from 'react';
 import { items } from './mock';
-import { Dot } from './Dot';
+import { Port } from './Port';
 import { Context } from './Svg';
-import { convertXYtoViewPort } from './utils';
-import { PathTest2 } from './Path';
+import { convertXYtoViewPort, getInputId, getOutputId } from './utils';
 
 
-export const RectTest: FC<{
+export const Item: FC<{
     item: typeof items[keyof typeof items],
     onMove: (item: typeof items[keyof typeof items] | null) => void;
     onChange: (item: typeof items[keyof typeof items]) => void;
@@ -90,7 +89,7 @@ export const RectTest: FC<{
                     r={10}
                     x={0}
                     y={0}
-                    fill="#0f0"
+                    fill="#2e5b9f"
                     stroke="#000"
                     strokeWidth={1}
                     onMouseDown={onMouseDown}
@@ -107,38 +106,38 @@ export const RectTest: FC<{
                         r={10}
                         rx={4}
                         ry={4}
-                        fill="#0f0"
+                        fill="#2e5b9f"
                         stroke="#000"
                         strokeWidth={1}
                         onMouseDown={onMouseDown}
                     />
-                    <Dot
+                    <Port
                         portData={{
                             x: state.x + 0,
                             y: state.y + 0,
                             itemId: item.id,
                             height: 10,
                             width: 10,
-                            id: `${item.id}-input`,
+                            id: getInputId(item.id),
                             connected: item.input
                         }}
-                        id={`${item.id}-input`}
+                        id={getInputId(item.id)}
                         width={10}
                         height={10}
                         x={0}
                         y={0}
                     />
-                    <Dot
+                    <Port
                         portData={{
                             x: state.x + item.width - 10,
                             y: state.y + 0,
                             itemId: item.id,
                             height: 10,
                             width: 10,
-                            id: `${item.id}-output`,
-                            connected: item.output && `${item.output}-input`
+                            id: getOutputId(item.id),
+                            connected: item.output && getInputId(item.output)
                         }}
-                        id={`${item.id}-output`}
+                        id={getOutputId(item.id)}
                         width={10}
                         height={10}
                         x={item.width - 10}
@@ -155,7 +154,7 @@ export const RectTest: FC<{
                         y={20}
                         rx={4}
                         ry={4}
-                        fill="#f00"
+                        fill="#fff"
                         stroke="#000"
                         strokeWidth={1}
                         onMouseDown={(e) => e.stopPropagation()}
@@ -177,21 +176,21 @@ export const RectTest: FC<{
                                             y={20}
                                             rx={4}
                                             ry={4}
-                                            fill="#f00"
+                                            fill="#fff"
                                             stroke="#000"
                                             strokeWidth={1}
                                         />
-                                        <Dot
+                                        <Port
                                             portData={{
                                                 x: state.x + 10 + item.width - 20 - 10,
                                                 y: state.y + 50 + idx * 30 + 20,
                                                 itemId: item.id,
                                                 height: 10,
                                                 width: 10,
-                                                id: `${item.id}-output-${el.id}`,
-                                                connected: el.connected &&`${el.connected}-input` 
+                                                id: getOutputId(item.id, el.id),
+                                                connected: el.connected && getInputId(el.connected) 
                                             }}
-                                            id={`${item.id}-output-${el.id}`}
+                                            id={getOutputId(item.id, el.id)}
                                             width={10}
                                             height={10}
                                             x={item.width - 20 - 10}

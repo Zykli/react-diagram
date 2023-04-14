@@ -26,7 +26,7 @@ export const items: {[id: item['id']]: item} = {
         x: 21,
         y: 237,
         height: 225,
-        width: 200,
+        width: itemsWidth,
         input: null,
         output: "2",
         outputs: [
@@ -58,7 +58,7 @@ export const items: {[id: item['id']]: item} = {
         x: 300,
         y: 70,
         height: 125,
-        width: 200,
+        width: itemsWidth,
         input: null,
         output: "4",
         outputs: [
@@ -78,7 +78,7 @@ export const items: {[id: item['id']]: item} = {
         x: 477,
         y: 507,
         height: 100,
-        width: 200,
+        width: itemsWidth,
         input: null,
         output: null
     },
@@ -88,7 +88,7 @@ export const items: {[id: item['id']]: item} = {
         x: 569,
         y: 327,
         height: 100,
-        width: 200,
+        width: itemsWidth,
         input: null,
         output: null
     }

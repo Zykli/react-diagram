@@ -1,31 +1,38 @@
-import React, { FC, SVGAttributes, useContext, useEffect, useMemo, useState } from "react";
+import React, { FC, SVGAttributes, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import ReactDOM from 'react-dom'
 import { Connector } from "./mock";
 import { PortsContext } from "./Svg";
+import ClickAwayListener from 'react-click-away-listener';
+import { PemovePath } from "../RemovePath/RemovePath";
 
 const rectsOffset = 20;
 
 type Props = SVGAttributes<SVGPathElement> & {
-    connected: Connector['connected']
+    fromPort: string;
+    toPort: string;
+    onRemove: (from: Props['fromPort'], to: Props['toPort']) => void;
 };
 
-export const PathTest2: FC<{
-    fromPort: string,
-    toPort: string,
-} & Props> = ({
+export const Path: FC<Props> = ({
     fromPort,
     toPort,
+    onRemove,
     d,
     ...props
 }) => {
     const [ cls, setCls ] = useState('path-hide');
+
+    const [ showRemove, setShowRemove ] = useState(false);
     
     const { ports } = useContext(PortsContext);
 
-    const d1 = useMemo(() => { 
+    const data = useMemo(() => { 
         const fromData = ports[fromPort];
         const toData = ports[toPort];
-        if(!fromData || !toData) return ''; 
+        if(!fromData || !toData) return {
+            d: '',
+            average: {}
+        }; 
         const from = {
             x: fromData.x + fromData.width,
             y: fromData.y + fromData.height / 2
@@ -38,11 +45,10 @@ export const PathTest2: FC<{
         
         const c1 = `${from.x + rectsOffset} ${from.y}`;
 
-        const dt2 = `${
-            [from.x, to.x].reduce((a, c) => a + c, 0) / 2
-        } ${
-            [from.y, to.y].reduce((a, c) => a + c, 0) / 2
-        }`;
+        const averageX = [from.x, to.x].reduce((a, c) => a + c, 0) / 2;
+        const averageY = [from.y, to.y].reduce((a, c) => a + c, 0) / 2;
+
+        const dt2 = `${averageX} ${averageY}`;
     
         const c2 = `${from.x + rectsOffset} ${from.y}`;
     
@@ -50,31 +56,58 @@ export const PathTest2: FC<{
 
         const dt3 = `${to.x} ${to.y}`; 
 
-        return `M${dt1} C ${c1}, ${c2}, ${dt2}, S ${s}, ${dt3}`;
+        return {
+            d: `M${dt1} C ${c1}, ${c2}, ${dt2}, S ${s}, ${dt3}`,
+            average: {
+                averageX,
+                averageY
+            }
+        };
     }, [fromPort, toPort, ports[fromPort], ports[toPort]]);
 
+    const hideRemoveButton = useCallback(() => setShowRemove(false), []);
+
     return (
-        <g>
-            <path
-                className={cls}
-                d={d1}
-                fill="none"
-                strokeWidth={8}
-                {...props}
-                onMouseEnter={() => setCls('path-show')}
-                onMouseOut={() => setCls('path-hide')}
-            />
-            <path
-                className="path"
-                d={d1}
-                fill="none"
-                strokeWidth={4}
-                stroke="#00f"
-                {...props}
-                onMouseEnter={() => setCls('path-show')}
-                onMouseOut={() => setCls('path-hide')}
-            />
-        </g>
+        <ClickAwayListener onClickAway={(e) => {
+            showRemove && hideRemoveButton()
+        }}>
+            <g
+                className="path-group"
+                onClick={(e) => {
+                    setShowRemove(true);
+                }}
+            >                
+                <path
+                    className={cls}
+                    d={data.d}
+                    fill="none"
+                    strokeWidth={8}
+                    {...props}
+                    onMouseEnter={() => setCls('path-show')}
+                    onMouseOut={() => setCls('path-hide')}
+                />
+                <path
+                    className="path"
+                    d={data.d}
+                    fill="none"
+                    strokeWidth={3}
+                    stroke="#7c7c7c"
+                    {...props}
+                    onMouseEnter={() => setCls('path-show')}
+                    onMouseOut={() => setCls('path-hide')}
+                />
+                {
+                    showRemove &&
+                    <PemovePath 
+                        onClick={() => {
+                            onRemove(fromPort, toPort);
+                        }}
+                        x={(data.average.averageX || ports[fromPort].x + 20)}
+                        y={(data.average.averageY || ports[fromPort].y) - 15}
+                    />
+                }
+            </g>
+        </ClickAwayListener>
     );
 };
 
@@ -100,8 +133,8 @@ export const PathTest: FC<Props> = ({
                 className="path"
                 d={d}
                 fill="none"
-                strokeWidth={4}
-                stroke="#00f"
+                strokeWidth={3}
+                stroke="#7c7c7c"
                 {...props}
                 onMouseEnter={() => setCls('path-show')}
                 onMouseOut={() => setCls('path-hide')}

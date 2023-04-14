@@ -6,7 +6,7 @@ type Props = SVGAttributes<SVGRectElement> & {
     id: string;
 };
 
-export const Dot: FC<Props> = ({
+export const Port: FC<Props> = ({
     portData,
     id,
     height,
