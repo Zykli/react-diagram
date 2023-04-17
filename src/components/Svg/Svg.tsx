@@ -1,8 +1,7 @@
 import { cloneDeep, fromPairs, keyBy, toPairs } from "lodash";
 import React, { ComponentProps, FC, createContext, createRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Value, ReactSVGPanZoom } from 'react-svg-pan-zoom';
-
-import './test.css';
+import './Svg.scss';
 import { Path } from "../Path";
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
 import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
@@ -217,7 +216,7 @@ export const SVGtest2: FC<{
                             };
                         }
                         return el;
-                    })
+                    });
                 } else {
                     item[portData.portType] = toPortData.itemId;
                 }

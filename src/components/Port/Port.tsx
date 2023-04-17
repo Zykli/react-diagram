@@ -1,11 +1,13 @@
-import React, { FC, SVGAttributes, useContext, useEffect } from "react";
+import React, { FC, SVGAttributes, useContext, useEffect, useMemo } from "react";
 import { Ports, PortsContext } from "../../contexts/ports";
-import './Port.css';
+import './Port.scss';
+import { getDataFromId } from "../../utils/utils";
 
 type Props = SVGAttributes<SVGRectElement> & {
     gProps?: SVGAttributes<SVGGElement>;
     portData: Ports[keyof Ports],
     id: string;
+    disabled?: boolean;
 };
 
 export const Port: FC<Props> = ({
@@ -16,10 +18,13 @@ export const Port: FC<Props> = ({
     x,
     y,
     gProps,
+    disabled,
     ...props
 }) => {
 
     const { setPorts } = useContext(PortsContext);
+
+    const portInfo = useMemo(() => getDataFromId(id), [id]);
 
     useEffect(() => {
         setPorts({
@@ -30,22 +35,33 @@ export const Port: FC<Props> = ({
         });
     }, [portData.x, portData.y]);
 
+    // useEffect(() => {
+    //     if(disabled) {
+    //         setPorts({
+    //             [id]: {
+    //                 ...portData,
+    //                 connected: null
+    //             }
+    //         });
+    //     }
+    // }, [disabled, portData]);
+
     return (
         <g
             {...gProps}
             onMouseDown={(e) => {
                 e.stopPropagation();
-                gProps?.onMouseDown?.(e);
+                !disabled && gProps?.onMouseDown?.(e);
             }}
             onMouseUp={(e) => {
                 e.stopPropagation();
-                gProps?.onMouseUp?.(e);
+                !disabled && gProps?.onMouseUp?.(e);
             }}
         >
             <svg y={5}>
                 <rect
                     id={id}
-                    className="Port"
+                    className={`Port${portData.connected ? ' Connected' : ''}`}
                     width={width || 10}
                     height={height || 10}
                     x={x || 0}

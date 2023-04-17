@@ -1,0 +1,14 @@
+.Path {
+
+    &-hide {
+        stroke: rgba(255, 0, 0, 0);
+    }
+
+    &-show {
+        stroke: rgba(255, 0, 0, 0.5);
+    }
+
+    &-info {
+        pointer-events: none;
+    }
+}

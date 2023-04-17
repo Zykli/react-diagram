@@ -1,0 +1,11 @@
+.ReactSVGPanZoom {
+    border: 1px solid;
+}
+
+.rect {
+    
+    &:hover {
+        /* stroke: #f00; */
+        pointer-events: none;
+    }
+}

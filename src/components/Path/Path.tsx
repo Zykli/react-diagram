@@ -3,6 +3,7 @@ import ClickAwayListener from 'react-click-away-listener';
 import { PortsContext } from "../../contexts/ports";
 import { PemovePath } from "../RemovePath";
 import { getInputId } from "../../utils/utils";
+import './Path.scss';
 
 const rectsOffset = 20;
 
@@ -19,7 +20,7 @@ export const Path: FC<Props> = ({
     d,
     ...props
 }) => {
-    const [ cls, setCls ] = useState('path-hide');
+    const [ cls, setCls ] = useState('Path-hide');
 
     const [ showRemove, setShowRemove ] = useState(false);
     
@@ -75,7 +76,7 @@ export const Path: FC<Props> = ({
             showRemove && hideRemoveButton()
         }}>
             <g
-                className="path-group"
+                className="Path-group"
                 onClick={(e) => {
                     setShowRemove(true);
                 }}
@@ -86,18 +87,18 @@ export const Path: FC<Props> = ({
                     fill="none"
                     strokeWidth={8}
                     {...props}
-                    onMouseEnter={() => !isInfoPath && setCls('path-show')}
-                    onMouseOut={() => !isInfoPath && setCls('path-hide')}
+                    onMouseEnter={() => !isInfoPath && setCls('Path-show')}
+                    onMouseOut={() => !isInfoPath && setCls('Path-hide')}
                 />
                 <path
-                    className="path"
+                    className="Path"
                     d={data.d}
                     fill="none"
                     strokeWidth={3}
                     stroke="#7c7c7c"
                     {...props}
-                    onMouseEnter={() => !isInfoPath && setCls('path-show')}
-                    onMouseOut={() => !isInfoPath && setCls('path-hide')}
+                    onMouseEnter={() => !isInfoPath && setCls('Path-show')}
+                    onMouseOut={() => !isInfoPath && setCls('Path-hide')}
                 />
                 {
                     showRemove &&

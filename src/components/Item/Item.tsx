@@ -1,4 +1,4 @@
-import React, { FC, createRef, useCallback, useContext, useRef, useState } from 'react';
+import React, { FC, createRef, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { items } from '../../test2/mock';
 import { ZoomContext } from '../../contexts/zoom';
 import { convertXYtoViewPort, getInputId, getOutputId } from '../../utils/utils';
@@ -67,6 +67,37 @@ export const Item: FC<{
         window.addEventListener('mouseup', onMouseUp);
     }, [item, onMouseMove, onMouseUp]);
 
+    const inputPortData = useMemo(() => {
+        return {
+            x: state.x + 0,
+            y: state.y + 0,
+            itemId: item.id,
+            height: 10,
+            width: 10,
+            id: getInputId(item.id),
+            connected: item.input
+        }
+    }, [state.x, state.y, item.id, item.input]);
+
+    const outputPortData = useMemo(() => {
+        return {
+            x: state.x + item.width - 10,
+            y: state.y + 0,
+            itemId: item.id,
+            height: 10,
+            width: 10,
+            id: getOutputId(item.id),
+            connected: item.output && getInputId(item.output)
+        }
+    }, [state.x, state.y, item.width, item.id, item.output]);
+
+    const disableOutputPort = useMemo(() => {
+        if(item.outputs && !item.outputs.filter(el => el === null).length) {
+            return true;
+        }
+        return false;
+    }, [item.outputs]);
+
     return (
         <>
         <svg
@@ -112,22 +143,14 @@ export const Item: FC<{
                     <Port
                         gProps={{
                             onMouseDown: (e) => {
-                                onPortMouseDown(getInputId(item.id), e)
+                                onPortMouseDown(inputPortData.id, e)
                             },
                             onMouseUp: (e) => {
-                                onPortMouseUp(getInputId(item.id), e)
+                                onPortMouseUp(inputPortData.id, e)
                             }
                         }}
-                        portData={{
-                            x: state.x + 0,
-                            y: state.y + 0,
-                            itemId: item.id,
-                            height: 10,
-                            width: 10,
-                            id: getInputId(item.id),
-                            connected: item.input
-                        }}
-                        id={getInputId(item.id)}
+                        portData={inputPortData}
+                        id={inputPortData.id}
                         width={10}
                         height={10}
                         x={0}
@@ -136,26 +159,19 @@ export const Item: FC<{
                     <Port
                         gProps={{
                             onMouseDown: (e) => {
-                                onPortMouseDown(getOutputId(item.id), e)
+                                onPortMouseDown(outputPortData.id, e)
                             },
                             onMouseUp: (e) => {
-                                onPortMouseUp(getOutputId(item.id), e)
+                                onPortMouseUp(outputPortData.id, e)
                             }
                         }}
-                        portData={{
-                            x: state.x + item.width - 10,
-                            y: state.y + 0,
-                            itemId: item.id,
-                            height: 10,
-                            width: 10,
-                            id: getOutputId(item.id),
-                            connected: item.output && getInputId(item.output)
-                        }}
-                        id={getOutputId(item.id)}
+                        portData={outputPortData}
+                        id={outputPortData.id}
                         width={10}
                         height={10}
                         x={item.width - 10}
                         y={0}
+                        disabled={disableOutputPort}
                     />
                 </svg>
                 <g
