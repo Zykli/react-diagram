@@ -2,12 +2,14 @@
   "name": "react-mutliple-diagram",
   "version": "0.14.1",
   "main": "./lib/index-lib.js",
+  "author": "Zykli",
+  "homepage": "https://zykli.github.io/react-diagram/demo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zykli/react-diagram"
+  },
   "dependencies": {
     "@react-hook/window-size": "^3.1.1",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
     "@types/node": "^16.18.23",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
