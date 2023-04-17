@@ -1,7 +1,6 @@
 {
   "name": "react-mutliple-diagram",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.11.0",
   "main": "./lib/index-lib.js",
   "dependencies": {
     "@react-hook/window-size": "^3.1.1",
@@ -23,7 +22,8 @@
   },
   "scripts": {
     "clear": "rm -r lib",
-    "compile": "npm run clear && npx tsc",
+    "copyCss": "npx cpy src/**/*.css !**/App.css !**/index.css ./lib --parents",
+    "compile": "npm run clear && npx tsc && npm run copyCss",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "buildDemo": "set \"PUBLIC_URL=/react-diagram/demo/\" && set \"BUILD_PATH=demo\" && react-scripts build",
@@ -51,6 +51,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.192",
     "@types/react-svg-pan-zoom": "^3.3.5",
+    "cpy-cli": "^4.2.0",
     "sass": "^1.62.0"
   }
 }
