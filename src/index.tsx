@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { SVG, SVGWithZoom, SVGtest2 } from './components/Svg';
+import { SVGReactDiagram } from './components/Svg';
 import { items, items8 } from './test2/mock';
 
 const root = ReactDOM.createRoot(
@@ -12,7 +12,7 @@ const root = ReactDOM.createRoot(
 root.render(
   // <React.StrictMode>
   <div style={{ padding: '0px' }}>
-    <SVGWithZoom
+    <SVGReactDiagram
       items={items8}
     />
   {/* <App /> */}

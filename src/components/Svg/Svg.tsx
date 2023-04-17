@@ -14,20 +14,7 @@ type Props = {
     items: {[key: string]: ItemType};
 };
 
-export const SVG: FC<ComponentProps<typeof SVGtest2>> = ({
-    ...props
-}) => {
-    return (
-        <svg height={400} width={800} className="svg-main">
-            <g id='pathesRoot' />
-            <SVGtest2
-                {...props}
-            />
-        </svg>
-    )
-};
-
-export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
+export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
     ...props
 }) => {
 
@@ -73,7 +60,7 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
                         SVGBackground="transparent"
                     >
                         <svg id={'svgroot2'} width={800} height={800}>
-                            <SVGtest2
+                            <SVGWithZoom
                                 {...props}
                             />
                         </svg>
@@ -84,7 +71,7 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
     )
 };
 
-export const SVGtest2: FC<Props> = ({
+const SVGWithZoom: FC<Props> = ({
     items
 }) => {
 
