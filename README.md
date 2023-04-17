@@ -2,7 +2,9 @@
 [demo](https://zykli.github.io/react-diagram/demo/)
 
 ### install
-`npm i react-mutliple-diagram`
+```
+npm i react-mutliple-diagram
+```
 
 ### Usage
 ```
@@ -35,5 +37,7 @@ function App() {
 ```
 
 ### Props
+| Name  | Description |
+| ------------- | ------------- |
 | items  | Object with items to view |
 | onChagne  | fucntion (newItems) => void  |
