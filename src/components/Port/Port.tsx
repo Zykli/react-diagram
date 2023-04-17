@@ -3,6 +3,7 @@ import { Ports, PortsContext } from "../../contexts/ports";
 import './Port.scss';
 import { getDataFromId } from "../../utils/utils";
 import { useDidUpdateEffect } from "../../utils/hooks";
+import { portRadius } from "../../utils/constanst";
 
 type Props = SVGAttributes<SVGRectElement> & {
     gProps?: SVGAttributes<SVGGElement>;
@@ -30,8 +31,7 @@ export const Port: FC<Props> = ({
     useEffect(() => {
         setPorts({
             [id]: {
-                ...portData,
-                y: (portData.height / 2) + portData.y
+                ...portData
             }
         });
     }, [portData.x, portData.y, portData.height]);
@@ -50,6 +50,7 @@ export const Port: FC<Props> = ({
     return (
         <g
             {...gProps}
+            y={0}
             onMouseDown={(e) => {
                 e.stopPropagation();
                 !disabled && gProps?.onMouseDown?.(e);
@@ -70,6 +71,8 @@ export const Port: FC<Props> = ({
                     fill="#0f0"
                     strokeWidth={1}
                     stroke="#000"
+                    rx={portRadius}
+                    ry={portRadius}
                     {...props}
                 />
             </svg>

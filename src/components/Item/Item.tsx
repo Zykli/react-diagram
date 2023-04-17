@@ -68,29 +68,46 @@ export const Item: FC<ItemProps> = ({
         window.addEventListener('mouseup', onMouseUp);
     }, [item, onMouseMove, onMouseUp]);
 
+    const inputPortParams = useMemo(() => {
+        return {
+            x: 0,
+            y: itemHeaderHeight / 2 - portHeight / 2,
+            height: portHeight,
+            width: portWidth
+        }
+    }, []);
+
     const inputPortData = useMemo(() => {
         return {
-            x: state.x + 0,
-            y: state.y + itemHeaderHeight / 2 - portHeight,
+            ...inputPortParams,
+            x: state.x + inputPortParams.x,
+            y: state.y + inputPortParams.y,
             itemId: item.id,
-            height: portHeight,
-            width: portWidth,
             id: getInputId(item.id),
             connected: item.input
         }
-    }, [state.x, state.y, item.id, item.input]);
+    }, [state.x, state.y, item.id, item.input, inputPortParams]);
+
+    const outputPortParams = useMemo(() => {
+        return {
+            x: item.width - portWidth,
+            y: itemHeaderHeight / 2 - portHeight / 2,
+            // y: 0,
+            height: portHeight,
+            width: portWidth
+        }
+    }, []);
 
     const outputPortData = useMemo(() => {
         return {
-            x: state.x + item.width - portWidth,
-            y: state.y + itemHeaderHeight / 2 - portHeight,
+            ...outputPortParams,
+            x: state.x + outputPortParams.x,
+            y: state.y + outputPortParams.y,
             itemId: item.id,
-            height: portHeight,
-            width: portWidth,
             id: getOutputId(item.id),
             connected: item.output && getInputId(item.output)
         }
-    }, [state.x, state.y, item.width, item.id, item.output]);
+    }, [state.x, state.y, item.width, item.id, item.output, outputPortParams]);
 
     const disableOutputPort = useMemo(() => {
         if(item.outputs && !item.outputs.filter(el => el.connected === null).length) {
@@ -160,10 +177,10 @@ export const Item: FC<ItemProps> = ({
                         }}
                         portData={inputPortData}
                         id={inputPortData.id}
-                        width={inputPortData.width}
-                        height={inputPortData.height}
-                        x={0}
-                        y={itemHeaderHeight / 2 - inputPortData.height / 2}
+                        width={inputPortParams.width}
+                        height={inputPortParams.height}
+                        x={inputPortParams.x}
+                        y={inputPortParams.y}
                     />
                     <Port
                         gProps={{
@@ -176,10 +193,10 @@ export const Item: FC<ItemProps> = ({
                         }}
                         portData={outputPortData}
                         id={outputPortData.id}
-                        width={outputPortData.width}
-                        height={outputPortData.height}
-                        x={item.width - outputPortData.width}
-                        y={itemHeaderHeight / 2 - inputPortData.height / 2}
+                        width={outputPortParams.width}
+                        height={outputPortParams.height}
+                        x={outputPortParams.x}
+                        y={outputPortParams.y}
                         disabled={disableOutputPort}
                     />
                 </svg>

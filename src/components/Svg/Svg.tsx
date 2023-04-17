@@ -38,8 +38,8 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
             ...portsRef.current,
             ...newPorts
         };
-        setPortsState(newData);
         portsRef.current = newData;
+        setPortsState(newData);
     }, []);
 
     const [width, height] = useWindowSize({initialWidth: 800, initialHeight: 800});

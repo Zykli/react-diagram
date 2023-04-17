@@ -28,24 +28,25 @@ export const Subitem: FC<Props> = ({
 
     const subRef = createRef<SVGRectElement>();
 
-    const portData = useMemo(() => {
-        const {
-            height,
-            width
-        } = {
+    const outputPortParams = useMemo(() => {
+        return {
+            x: itemWidth - 20 - portWidth,
+            y: itemSubItemHeight / 2 - portHeight / 2,
             height: portHeight,
             width: portWidth
-        };
+        }
+    }, []);
+
+    const portData = useMemo(() => {
         return {
-            x: itemX + itemWidth - 20,
-            y: itemY + itemHeaderHeight + itemTextAreaHeight + (itemSubItemHeight + 10) * position - (itemSubItemHeight / 2 - height / 2),
+            ...outputPortParams,
+            x: itemX + outputPortParams.x + 10,
+            y: itemY + itemHeaderHeight + itemTextAreaHeight + position * (itemSubItemHeight + 10) + outputPortParams.y,
             itemId: itemId,
-            height,
-            width,
             id: getOutputId(itemId, data.id),
             connected: data.connected && getInputId(data.connected) 
         };
-    }, [itemX, itemY, itemWidth, position, itemId, data.connected]);
+    }, [itemX, itemY, itemWidth, position, itemId, data.connected, outputPortParams]);
 
     return (
         <g
@@ -79,10 +80,10 @@ export const Subitem: FC<Props> = ({
                     }}
                     portData={portData}
                     id={portData.id}
-                    width={portData.width}
-                    height={portData.height}
-                    x={itemWidth - 20 - portData.width}
-                    y={itemSubItemHeight / 2 - portData.height / 2}
+                    width={outputPortParams.width}
+                    height={outputPortParams.height}
+                    x={outputPortParams.x}
+                    y={outputPortParams.y}
                 />
             </svg>
         </g>
