@@ -40,4 +40,4 @@ function App() {
 | Name  | Description |
 | ------------- | ------------- |
 | items  | Object with items to view |
-| onChagne  | fucntion (newItems) => void  |
+| onChagne  | function `(newItems) => void`  |
