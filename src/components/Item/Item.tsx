@@ -4,14 +4,17 @@ import { ZoomContext } from '../../contexts/zoom';
 import { convertXYtoViewPort, getInputId, getOutputId } from '../../utils/utils';
 import { Port } from '../Port';
 import { Ports } from '../../contexts/ports';
+import { Subitem } from '../Subitem';
+import { itemHeaderHeight, itemTextAreaHeight, itemSubItemHeight, portHeight, portWidth } from '../../utils/constanst';
 
-
-export const Item: FC<{
+export type ItemProps = {
     item: typeof items[keyof typeof items],
     onChange: (item: typeof items[keyof typeof items]) => void;
     onPortMouseDown: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
     onPortMouseUp: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
-}> = ({
+};
+
+export const Item: FC<ItemProps> = ({
     item,
     onChange,
     onPortMouseDown,
@@ -23,8 +26,6 @@ export const Item: FC<{
     const ref = createRef<SVGRectElement>();
     const svgRef = createRef<SVGSVGElement>();
     const offsets = useRef([0, 0]);
-
-    const ZoomerContext = useContext(ZoomContext);
 
     const onMouseMove = useCallback((e: MouseEvent) => {
         const [offsetX, offsetY] = offsets.current;
@@ -70,10 +71,10 @@ export const Item: FC<{
     const inputPortData = useMemo(() => {
         return {
             x: state.x + 0,
-            y: state.y + 0,
+            y: state.y + itemHeaderHeight / 2 - portHeight,
             itemId: item.id,
-            height: 10,
-            width: 10,
+            height: portHeight,
+            width: portWidth,
             id: getInputId(item.id),
             connected: item.input
         }
@@ -81,22 +82,30 @@ export const Item: FC<{
 
     const outputPortData = useMemo(() => {
         return {
-            x: state.x + item.width - 10,
-            y: state.y + 0,
+            x: state.x + item.width - portWidth,
+            y: state.y + itemHeaderHeight / 2 - portHeight,
             itemId: item.id,
-            height: 10,
-            width: 10,
+            height: portHeight,
+            width: portWidth,
             id: getOutputId(item.id),
             connected: item.output && getInputId(item.output)
         }
     }, [state.x, state.y, item.width, item.id, item.output]);
 
     const disableOutputPort = useMemo(() => {
-        if(item.outputs && !item.outputs.filter(el => el === null).length) {
+        if(item.outputs && !item.outputs.filter(el => el.connected === null).length) {
             return true;
         }
         return false;
     }, [item.outputs]);
+
+    const itemHeight = useMemo(() => {
+        const baseHeight = itemHeaderHeight + itemTextAreaHeight;
+        if(item.outputs) {
+            return baseHeight + item.outputs.length * (itemSubItemHeight + 10);
+        }
+        return baseHeight;
+    }, [item.height, item.outputs]);
 
     return (
         <>
@@ -112,7 +121,7 @@ export const Item: FC<{
                     className={'rect'}
                     ref={ref}
                     width={item.width}
-                    height={item.height}
+                    height={itemHeight}
                     rx={10}
                     ry={10}
                     r={10}
@@ -131,7 +140,7 @@ export const Item: FC<{
                         className={'rect'}
                         ref={ref}
                         width={item.width}
-                        height={20}
+                        height={itemHeaderHeight}
                         r={10}
                         rx={4}
                         ry={4}
@@ -151,10 +160,10 @@ export const Item: FC<{
                         }}
                         portData={inputPortData}
                         id={inputPortData.id}
-                        width={10}
-                        height={10}
+                        width={inputPortData.width}
+                        height={inputPortData.height}
                         x={0}
-                        y={0}
+                        y={itemHeaderHeight / 2 - inputPortData.height / 2}
                     />
                     <Port
                         gProps={{
@@ -167,10 +176,10 @@ export const Item: FC<{
                         }}
                         portData={outputPortData}
                         id={outputPortData.id}
-                        width={10}
-                        height={10}
-                        x={item.width - 10}
-                        y={0}
+                        width={outputPortData.width}
+                        height={outputPortData.height}
+                        x={item.width - outputPortData.width}
+                        y={itemHeaderHeight / 2 - inputPortData.height / 2}
                         disabled={disableOutputPort}
                     />
                 </svg>
@@ -181,65 +190,37 @@ export const Item: FC<{
                         className={'rect'}
                         ref={ref}
                         width={item.width}
-                        height={item.height - 20}
+                        height={itemHeight - itemHeaderHeight}
                         x={0}
-                        y={20}
+                        y={itemHeaderHeight}
                         rx={4}
                         ry={4}
                         fill="#fff"
                         stroke="#000"
                         strokeWidth={1}
                     />
-                    {
-                        item.outputs?.map((el, idx) => {
-                            return (
-                                <g key={`g-${item.id}-${el.id}`}>
-                                    <svg
-                                        x={10}
-                                        y={50 + idx * 30}
-                                    >
-                                        <rect
-                                            className={'rect'}
-                                            ref={ref}
-                                            width={item.width - 20}
-                                            height={20}
-                                            x={0}
-                                            y={20}
-                                            rx={4}
-                                            ry={4}
-                                            fill="#fff"
-                                            stroke="#000"
-                                            strokeWidth={1}
-                                        />
-                                        <Port
-                                            gProps={{
-                                                onMouseDown: (e) => {
-                                                    onPortMouseDown(getOutputId(item.id, el.id), e)
-                                                },
-                                                onMouseUp: (e) => {
-                                                    onPortMouseUp(getOutputId(item.id, el.id), e)
-                                                }
-                                            }}
-                                            portData={{
-                                                x: state.x + 10 + item.width - 20 - 10,
-                                                y: state.y + 50 + idx * 30 + 20,
-                                                itemId: item.id,
-                                                height: 10,
-                                                width: 10,
-                                                id: getOutputId(item.id, el.id),
-                                                connected: el.connected && getInputId(el.connected) 
-                                            }}
-                                            id={getOutputId(item.id, el.id)}
-                                            width={10}
-                                            height={10}
-                                            x={item.width - 20 - 10}
-                                            y={20}
-                                        />
-                                    </svg>
-                                </g>
-                            )
-                        })
-                    }
+                    <g
+                        x={0}
+                        y={itemHeaderHeight + itemTextAreaHeight}
+                    >
+                        {
+                            item.outputs?.map((el, idx) => {
+                                return (
+                                    <Subitem
+                                        key={`g-${item.id}-${el.id}`}
+                                        data={el}
+                                        itemId={item.id}
+                                        itemWidth={item.width}
+                                        itemX={state.x}
+                                        itemY={state.y}
+                                        onPortMouseDown={onPortMouseDown}
+                                        onPortMouseUp={onPortMouseUp}
+                                        position={idx}
+                                    />
+                                );
+                            })
+                        }
+                    </g>
                 </g>
             </g>
         </svg>

@@ -100,7 +100,7 @@ export const items8 = JSON.parse(JSON.stringify({
         "type": "rect",
         "x": -108.31220245361328,
         "y": 166.32937622070312,
-        "height": 225,
+        "height": 100,
         "width": 200,
         "input": null,
         "output": "2",
@@ -132,10 +132,10 @@ export const items8 = JSON.parse(JSON.stringify({
         "type": "rect",
         "x": 218.80398559570312,
         "y": 17.372941970825195,
-        "height": 125,
+        "height": 100,
         "width": 200,
         "input": null,
-        "output": "4",
+        "output": null,
         "outputs": [
             {
                 "id": "1",

@@ -2,6 +2,7 @@ import React, { FC, SVGAttributes, useContext, useEffect, useMemo } from "react"
 import { Ports, PortsContext } from "../../contexts/ports";
 import './Port.scss';
 import { getDataFromId } from "../../utils/utils";
+import { useDidUpdateEffect } from "../../utils/hooks";
 
 type Props = SVGAttributes<SVGRectElement> & {
     gProps?: SVGAttributes<SVGGElement>;
@@ -30,21 +31,21 @@ export const Port: FC<Props> = ({
         setPorts({
             [id]: {
                 ...portData,
-                y: 5 + portData.y
+                y: (portData.height / 2) + portData.y
             }
         });
-    }, [portData.x, portData.y]);
+    }, [portData.x, portData.y, portData.height]);
 
-    // useEffect(() => {
-    //     if(disabled) {
-    //         setPorts({
-    //             [id]: {
-    //                 ...portData,
-    //                 connected: null
-    //             }
-    //         });
-    //     }
-    // }, [disabled, portData]);
+    useDidUpdateEffect(() => {
+        if(disabled) {
+            setPorts({
+                [id]: {
+                    ...portData,
+                    connected: null
+                }
+            });
+        }
+    }, [disabled, portData]);
 
     return (
         <g
@@ -58,7 +59,7 @@ export const Port: FC<Props> = ({
                 !disabled && gProps?.onMouseUp?.(e);
             }}
         >
-            <svg y={5}>
+            <svg>
                 <rect
                     id={id}
                     className={`Port${portData.connected ? ' Connected' : ''}`}
