@@ -1,4 +1,4 @@
-## Package to view block diagram and make new block connctions
+## Package to view block diagram and make blocks connections
 [demo](https://zykli.github.io/react-diagram/demo/)
 
 ### install
