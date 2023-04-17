@@ -1,5 +1,5 @@
 import React, { FC, createRef, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { items } from '../../test2/mock';
+import { Item as ItemType } from '../../utils/types';
 import { ZoomContext } from '../../contexts/zoom';
 import { convertXYtoViewPort, getInputId, getOutputId } from '../../utils/utils';
 import { Port } from '../Port';
@@ -8,8 +8,8 @@ import { Subitem } from '../Subitem';
 import { itemHeaderHeight, itemTextAreaHeight, itemSubItemHeight, portHeight, portWidth } from '../../utils/constanst';
 
 export type ItemProps = {
-    item: typeof items[keyof typeof items],
-    onChange: (item: typeof items[keyof typeof items]) => void;
+    item: ItemType,
+    onChange: (item: ItemType) => void;
     onPortMouseDown: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
     onPortMouseUp: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
 };

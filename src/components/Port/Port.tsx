@@ -1,6 +1,6 @@
 import React, { FC, SVGAttributes, useContext, useEffect, useMemo } from "react";
 import { Ports, PortsContext } from "../../contexts/ports";
-import './Port.scss';
+import './Port.css';
 import { getDataFromId } from "../../utils/utils";
 import { useDidUpdateEffect } from "../../utils/hooks";
 import { portRadius } from "../../utils/constanst";
@@ -25,8 +25,6 @@ export const Port: FC<Props> = ({
 }) => {
 
     const { setPorts } = useContext(PortsContext);
-
-    const portInfo = useMemo(() => getDataFromId(id), [id]);
 
     useEffect(() => {
         setPorts({

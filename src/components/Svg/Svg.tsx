@@ -1,15 +1,18 @@
 import { cloneDeep, fromPairs, keyBy, toPairs } from "lodash";
 import React, { ComponentProps, FC, createContext, createRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Value, ReactSVGPanZoom } from 'react-svg-pan-zoom';
-import './Svg.scss';
 import { Path } from "../Path";
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
 import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
-import { items } from "../../test2/mock";
+import { Item as ItemType } from "../../utils/types";
 import { convertXYtoViewPort, getDataFromId, getInputId } from "../../utils/utils";
 import { Item } from "../Item";
-import { Port } from "../Port";
 import { useWindowSize } from '@react-hook/window-size';
+import './Svg.css';
+
+type Props = {
+    items: {[key: string]: ItemType};
+};
 
 export const SVG: FC<ComponentProps<typeof SVGtest2>> = ({
     ...props
@@ -81,9 +84,7 @@ export const SVGWithZoom: FC<ComponentProps<typeof SVGtest2>> = ({
     )
 };
 
-export const SVGtest2: FC<{
-    items: typeof items;
-}> = ({
+export const SVGtest2: FC<Props> = ({
     items
 }) => {
 

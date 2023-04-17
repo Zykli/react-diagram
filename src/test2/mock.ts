@@ -1,25 +1,8 @@
-export type Connector = {
-    id: string;
-    connected: string | null;
-}
-
-type item = {
-    id: string,
-    type: 'rect' | 'path'
-    x: number,
-    y: number,
-    height: number,
-    width: number,
-    items?: item[],
-    input: string | null;
-    output: string | null;
-    outputs?: Connector[];
-    inputs?: Connector[];
-};
+import { Item } from '../utils/types'
 
 const itemsWidth = 200;
 
-export const items: {[id: item['id']]: item} = {
+export const items: {[id: Item['id']]: Item} = {
     "1": {
         id: "1",
         type: "rect",

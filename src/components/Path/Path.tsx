@@ -3,7 +3,7 @@ import ClickAwayListener from 'react-click-away-listener';
 import { PortsContext } from "../../contexts/ports";
 import { PemovePath } from "../RemovePath";
 import { getInputId } from "../../utils/utils";
-import './Path.scss';
+import './Path.css';
 
 const rectsOffset = 20;
 

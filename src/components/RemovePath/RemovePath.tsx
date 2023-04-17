@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import './RemovePath.scss';
+import './RemovePath.css';
 
 type Props = {
     onClick: () => void;

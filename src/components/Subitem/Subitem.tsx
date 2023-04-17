@@ -1,10 +1,10 @@
 import React, { FC, createRef, useMemo } from 'react';
-import './Subitem.scss';
 import { Port } from '../Port';
-import { Connector } from '../../test2/mock';
+import { Connector } from '../../utils/types';
 import { getInputId, getOutputId } from '../../utils/utils';
 import { ItemProps } from '../Item';
 import { itemHeaderHeight, itemSubItemHeight, itemTextAreaHeight, portHeight, portWidth } from '../../utils/constanst';
+import './Subitem.css';
 
 type Props = Pick<ItemProps, 'onPortMouseDown' | 'onPortMouseUp'> &{
     itemId: string;

@@ -1,0 +1,9 @@
+.*
+**/tsconfig.json
+**/webpack.config.js
+.gitignore
+demo
+node_modules
+public
+src
+index.html

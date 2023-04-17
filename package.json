@@ -1,7 +1,8 @@
 {
-  "name": "react-diagram",
+  "name": "react-mutliple-diagram",
   "version": "0.1.0",
   "private": true,
+  "main": "./lib/index-lib.js",
   "dependencies": {
     "@react-hook/window-size": "^3.1.1",
     "@testing-library/jest-dom": "^5.16.5",
@@ -21,6 +22,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "clear": "rm -r lib",
+    "compile": "npm run clear && npx tsc",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "buildDemo": "set \"PUBLIC_URL=/react-diagram/demo/\" && set \"BUILD_PATH=demo\" && react-scripts build",
