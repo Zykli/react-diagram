@@ -10,8 +10,11 @@ import { Item } from "../Item";
 import { useWindowSize } from '@react-hook/window-size';
 import './Svg.css';
 
+export type DiagramItemsType = {[key: string]: ItemType};
+
 type Props = {
-    items: {[key: string]: ItemType};
+    items: DiagramItemsType;
+    onChange: (newItems: DiagramItemsType) => void;
 };
 
 export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
@@ -72,20 +75,22 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
 };
 
 const SVGWithZoom: FC<Props> = ({
-    items
+    items,
+    onChange
 }) => {
 
     const [ its, setIts ] = useState(items);
     const itsRef = useRef(its);
     useEffect(() => {
-        console.log('its', its);
+        // console.log('its', its);
         itsRef.current = its;
+        onChange(its);
     }, [its]);
     
     const { ports, setPorts } = useContext(PortsContext);
     const portsRef = useRef(ports);
     useEffect(() => {
-        console.log('ports', ports);
+        // console.log('ports', ports);
         portsRef.current = ports;
     }, [ports]);
 

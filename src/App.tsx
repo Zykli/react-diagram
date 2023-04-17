@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { ComponentProps, useCallback, useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { SVGReactDiagram } from './components/Svg';
+import { items8 } from './test2/mock';
 
 function App() {
+
+  const [ its, setIts ] = useState(items8);
+  useEffect(() => {
+      console.log('newItems', its);
+  }, [its]);
+
+  const onChangeItems: ComponentProps<typeof SVGReactDiagram>['onChange'] = useCallback((newItems) => {
+    setIts(newItems);
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <SVGReactDiagram
+        items={its}
+        onChange={onChangeItems}
+      />
     </div>
   );
 }
