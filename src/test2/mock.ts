@@ -10,7 +10,6 @@ export const items: {[id: Item['id']]: Item} = {
         text: 'Description for item1',
         x: 21,
         y: 237,
-        height: 225,
         width: itemsWidth,
         input: null,
         output: "2",
@@ -49,7 +48,6 @@ export const items: {[id: Item['id']]: Item} = {
         text: 'Description for item2',
         x: 300,
         y: 70,
-        height: 125,
         width: itemsWidth,
         input: null,
         output: "4",
@@ -73,7 +71,6 @@ export const items: {[id: Item['id']]: Item} = {
         text: 'Description for item3',
         x: 477,
         y: 507,
-        height: 100,
         width: itemsWidth,
         input: null,
         output: null
@@ -85,7 +82,6 @@ export const items: {[id: Item['id']]: Item} = {
         text: 'Description for item4',
         x: 569,
         y: 327,
-        height: 100,
         width: itemsWidth,
         input: null,
         output: null
@@ -100,7 +96,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'This is a very long description. Description for item1. And much more texts add',
         "x": -108.31220245361328,
         "y": 166.32937622070312,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": "2",
@@ -139,7 +134,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'Description for item2',
         "x": 218.80398559570312,
         "y": 17.372941970825195,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": null,
@@ -163,7 +157,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'Description for item3',
         "x": 284.5353088378906,
         "y": 564.1378784179688,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": "6"
@@ -175,7 +168,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'Description for item4',
         "x": 572.0072631835938,
         "y": 278.88385009765625,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": "5"
@@ -187,7 +179,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'Description for item5',
         "x": 874.2368774414062,
         "y": 275.87657928466797,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": null
@@ -199,7 +190,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'Description for item6',
         "x": 645.6851196289062,
         "y": 511.946533203125,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": null
@@ -211,7 +201,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'Description for item7',
         "x": 630.6488647460938,
         "y": 20.259422302246094,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": null
@@ -223,7 +212,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "text": 'Description for item8',
         "x": 290.8283386230469,
         "y": 430.75048828125,
-        "height": 100,
         "width": 200,
         "input": null,
         "output": "6"

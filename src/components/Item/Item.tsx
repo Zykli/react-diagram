@@ -134,7 +134,7 @@ export const Item: FC<ItemProps> = ({
             return baseHeight + item.outputs.length * (itemSubItemHeight + 10);
         }
         return baseHeight;
-    }, [item.height, item.outputs]);
+    }, [item.outputs]);
 
     const [ showButtons, setShowButtons ] = useState(false);
 

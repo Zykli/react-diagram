@@ -11,7 +11,6 @@ export type Item = {
     text: string;
     x: number;
     y: number;
-    height: number;
     width: number;
     items?: Item[];
     input: string | null;
