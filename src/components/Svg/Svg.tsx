@@ -16,7 +16,7 @@ type Props = {
     items: DiagramItemsType;
     onChange: (newItems: DiagramItemsType) => void;
     onItemChangeClick?: (item: DiagramItemsType[keyof DiagramItemsType]) => void;
-    allowDeleteElement?: boolean;
+    onItemDeleteClick?: (item: DiagramItemsType[keyof DiagramItemsType]) => void;
 };
 
 export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
@@ -84,7 +84,7 @@ const SVGWithZoom: FC<Props> = ({
     items,
     onChange,
     onItemChangeClick,
-    allowDeleteElement
+    onItemDeleteClick
 }) => {
 
     const [ its, setIts ] = useState(items);
@@ -247,7 +247,12 @@ const SVGWithZoom: FC<Props> = ({
         onItemChangeClick?.(item);
     }, []);
 
-    const onItemDelete = useCallback((removeItemId: keyof typeof items) => {
+    const onItemDelete = useCallback<NonNullable<typeof onItemDeleteClick>>(async function(item) {
+        const removeItemId = item.id;
+        const confirm = await onItemDeleteClick?.(item);
+        if(!confirm) {
+            return;    
+        }
         const changedPorts = Object.values(portsRef.current).map(port => {
             const connectedData = port.connected ? getDataFromId(port.connected) : null;
             if(connectedData?.itemId === removeItemId) {
@@ -333,7 +338,7 @@ const SVGWithZoom: FC<Props> = ({
                         onPortMouseUp={onPortMouseUp}
                         showChangeButton={!!onItemChangeClick}
                         onChangeClick={onItemChange}
-                        showDeleteButton={!!allowDeleteElement}
+                        showDeleteButton={!!onItemDeleteClick}
                         onDeleteClick={onItemDelete}
                     />
                 );

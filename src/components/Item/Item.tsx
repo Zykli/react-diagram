@@ -17,7 +17,7 @@ export type ItemProps = {
     showChangeButton: boolean;
     onChangeClick: (item: ItemType) => void;
     showDeleteButton: boolean;
-    onDeleteClick: (itemId: ItemType['id']) => void;
+    onDeleteClick: (item: ItemType) => void;
 };
 
 export const Item: FC<ItemProps> = ({
@@ -142,7 +142,7 @@ export const Item: FC<ItemProps> = ({
     }, [showChangeButton, showDeleteButton, onChangeClick, showButtons]);
 
     const removeButton = useMemo(() => {
-        return showDeleteButton && showButtons ? <Trash x={item.width - 35} y={itemHeaderHeight / 2} onClick={() => onDeleteClick(item.id)} /> : null;
+        return showDeleteButton && showButtons ? <Trash x={item.width - 35} y={itemHeaderHeight / 2} onClick={() => onDeleteClick(item)} /> : null;
     }, [showDeleteButton, onDeleteClick, showButtons]);
 
     return (

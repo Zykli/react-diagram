@@ -22,7 +22,11 @@ function App() {
         onItemChangeClick={(item) => {
           console.log('item to change', item);
         }}
-        allowDeleteElement={true}
+        onItemDeleteClick={(item) => {
+          console.log('item to delete', item);
+          const confirm = window.confirm('Are you sure to remove that item?');
+          return confirm;
+        }}
       />
     </div>
   );
