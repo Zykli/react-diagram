@@ -6,19 +6,29 @@ import { Port } from '../Port';
 import { Ports } from '../../contexts/ports';
 import { Subitem } from '../Subitem';
 import { itemHeaderHeight, itemTextAreaHeight, itemSubItemHeight, portHeight, portWidth } from '../../utils/constanst';
+import { Pencil } from '../Pencil';
+import { Trash } from '../Trash';
 
 export type ItemProps = {
     item: ItemType,
     onChange: (item: ItemType) => void;
     onPortMouseDown: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
     onPortMouseUp: (item: keyof Ports, e: React.MouseEvent<SVGGElement, MouseEvent>) => void;
+    showChangeButton: boolean;
+    onChangeClick: (item: ItemType) => void;
+    showDeleteButton: boolean;
+    onDeleteClick: (itemId: ItemType['id']) => void;
 };
 
 export const Item: FC<ItemProps> = ({
     item,
     onChange,
     onPortMouseDown,
-    onPortMouseUp
+    onPortMouseUp,
+    showChangeButton,
+    onChangeClick,
+    showDeleteButton,
+    onDeleteClick
 }) => {
 
     const [state, setState] = useState({x: item.x, y: item.y});
@@ -124,6 +134,17 @@ export const Item: FC<ItemProps> = ({
         return baseHeight;
     }, [item.height, item.outputs]);
 
+    const [ showButtons, setShowButtons ] = useState(false);
+
+    const editButton = useMemo(() => {
+        const ofsetY = showDeleteButton ? 60 : 35;
+        return showChangeButton && showButtons ? <Pencil x={item.width - ofsetY} y={itemHeaderHeight / 2} onClick={() => onChangeClick(item)} /> : null;
+    }, [showChangeButton, showDeleteButton, onChangeClick, showButtons]);
+
+    const removeButton = useMemo(() => {
+        return showDeleteButton && showButtons ? <Trash x={item.width - 35} y={itemHeaderHeight / 2} onClick={() => onDeleteClick(item.id)} /> : null;
+    }, [showDeleteButton, onDeleteClick, showButtons]);
+
     return (
         <>
         <svg
@@ -152,6 +173,8 @@ export const Item: FC<ItemProps> = ({
                 <svg
                     x={0}
                     y={0}
+                    onMouseEnter={() => setShowButtons(true)}
+                    onMouseLeave={() => setShowButtons(false)}
                 >
                     <rect
                         className={'rect'}
@@ -166,6 +189,8 @@ export const Item: FC<ItemProps> = ({
                         strokeWidth={1}
                         onMouseDown={onMouseDown}
                     />
+                    {editButton}
+                    {removeButton}
                     <Port
                         gProps={{
                             onMouseDown: (e) => {

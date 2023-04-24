@@ -15,6 +15,7 @@ export type Ports = {
 
 export const initialPorts: {
     ports: Ports,
+    changePorts: (newPorts: Ports) => void;
     setPorts: (newPorts: Ports) => void;
 } = {
     ports: {
@@ -28,16 +29,8 @@ export const initialPorts: {
             y: 0
         }
     },
+    changePorts: () => {},
     setPorts: () => {}
 };
 
 export const PortsContext = createContext(initialPorts);
-
-export const usePortsContext = () => {
-    const { ports, setPorts: setPortsState } = useContext(PortsContext);
-    const setPorts = useRef(setPortsState);
-    return {
-        ports,
-        setPorts: setPorts.current 
-    }
-};

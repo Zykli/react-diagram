@@ -1,5 +1,4 @@
 import React, { ComponentProps, useCallback, useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { SVGReactDiagram } from './components/Svg';
 import { items8 } from './test2/mock';
@@ -20,6 +19,10 @@ function App() {
       <SVGReactDiagram
         items={its}
         onChange={onChangeItems}
+        onItemChangeClick={(item) => {
+          console.log('item to change', item);
+        }}
+        allowDeleteElement={true}
       />
     </div>
   );

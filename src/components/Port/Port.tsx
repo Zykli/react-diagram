@@ -24,10 +24,10 @@ export const Port: FC<Props> = ({
     ...props
 }) => {
 
-    const { setPorts } = useContext(PortsContext);
+    const { changePorts } = useContext(PortsContext);
 
     useEffect(() => {
-        setPorts({
+        changePorts({
             [id]: {
                 ...portData
             }
@@ -36,7 +36,7 @@ export const Port: FC<Props> = ({
 
     useDidUpdateEffect(() => {
         if(disabled) {
-            setPorts({
+            changePorts({
                 [id]: {
                     ...portData,
                     connected: null

@@ -15,6 +15,8 @@ export type DiagramItemsType = {[key: string]: ItemType};
 type Props = {
     items: DiagramItemsType;
     onChange: (newItems: DiagramItemsType) => void;
+    onItemChangeClick?: (item: DiagramItemsType[keyof DiagramItemsType]) => void;
+    allowDeleteElement?: boolean;
 };
 
 export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
@@ -26,7 +28,7 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
     const [value, setValue] = useState<Value>(initialZoom);
     const [ports, setPortsState] = useState<typeof initialPorts['ports']>(initialPorts.ports);
     const portsRef = useRef(ports);
-    const setPorts = useCallback((newPorts: Ports) => {
+    const changePorts = useCallback((newPorts: Ports) => {
         const newData = {
             ...portsRef.current,
             ...newPorts
@@ -34,11 +36,15 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
         portsRef.current = newData;
         setPortsState(newData);
     }, []);
+    const setPorts = useCallback((newPorts: Ports) => {
+        portsRef.current = newPorts;
+        setPortsState(newPorts);
+    }, []);
 
     const [width, height] = useWindowSize({initialWidth: 800, initialHeight: 800});
 
     return (
-        <PortsContext.Provider value={{ports, setPorts}}>
+        <PortsContext.Provider value={{ports, changePorts, setPorts}}>
             <ZoomContext.Provider value={value}>
                 <div 
                     className={'ReactSVGPanZoom'}
@@ -55,7 +61,7 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
                         // onPan={e => console.log('pan')}
                         // onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
                         detectAutoPan={false}
-                        disableDoubleClickZoomWithToolAuto={false}
+                        disableDoubleClickZoomWithToolAuto={true}
                         customToolbar={() => <></>}
                         customMiniature={() => { return <></> }}
                         style={{ margin: '0 auto' }}
@@ -76,7 +82,9 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
 
 const SVGWithZoom: FC<Props> = ({
     items,
-    onChange
+    onChange,
+    onItemChangeClick,
+    allowDeleteElement
 }) => {
 
     const [ its, setIts ] = useState(items);
@@ -87,10 +95,10 @@ const SVGWithZoom: FC<Props> = ({
         onChange(its);
     }, [its]);
     
-    const { ports, setPorts } = useContext(PortsContext);
+    const { ports, changePorts, setPorts } = useContext(PortsContext);
     const portsRef = useRef(ports);
     useEffect(() => {
-        // console.log('ports', ports);
+        console.log('ports', ports);
         portsRef.current = ports;
     }, [ports]);
 
@@ -119,7 +127,7 @@ const SVGWithZoom: FC<Props> = ({
             }
             return item;
         });
-        setPorts({
+        changePorts({
             ...fromPairs(toPairs(portsRef.current).filter(el => [from, to].includes(el[0])).map((el) => [ el[0], { ...el[1], connected: null } ]))
         });
         setIts({
@@ -136,7 +144,7 @@ const SVGWithZoom: FC<Props> = ({
         const newX = coords.x;
         const newY = coords.y;
         const cursorPort = portsRef.current[getInputId('cursor')];
-        setPorts({
+        changePorts({
             [getInputId('cursor')]: {
                 ...cursorPort,
                 x: newX - cursorPort.width / 2,
@@ -149,7 +157,7 @@ const SVGWithZoom: FC<Props> = ({
         const fromPortId = newPathRef.current;
         const fromPort = portsRef.current[fromPortId];
         setInitedNewPath('');
-        setPorts({
+        changePorts({
             [fromPort.id]: {
                 ...fromPort,
                 connected: null
@@ -169,7 +177,7 @@ const SVGWithZoom: FC<Props> = ({
             const newX = coords?.x || 0;
             const newY = coords?.y || 0;
             const cursorPort = portsRef.current[getInputId('cursor')];
-            setPorts({
+            changePorts({
                 [getInputId('cursor')]: {
                     ...cursorPort,
                     x: newX - cursorPort.width / 2,
@@ -187,17 +195,27 @@ const SVGWithZoom: FC<Props> = ({
     }, []);
 
     const onPortMouseUp: ComponentProps<typeof Item>['onPortMouseUp'] = useCallback((portId) => {
+        const fromPort = newPathRef.current;
+        const fromPortData = getDataFromId(newPathRef.current);
+        const toPortData = getDataFromId(portId.toString());
+        if(toPortData.portType === 'output') {
+            changePorts({
+                ...fromPairs(
+                    toPairs(portsRef.current)
+                        .filter(el => [fromPort].includes(el[0]))
+                        .map((el) => [ el[0], { ...el[1], connected: null } ])
+                    )   
+            });
+            setInitedNewPath('');
+        } else
         if(newPathRef.current && newPathRef.current !== portId) {
-            const fromPort = newPathRef.current;
-            setPorts({
+            changePorts({
                 ...fromPairs(
                     toPairs(portsRef.current)
                         .filter(el => [fromPort].includes(el[0]))
                         .map((el) => [ el[0], { ...el[1], connected: portId.toString() } ])
                     )   
             });
-            const fromPortData = getDataFromId(newPathRef.current);
-            const toPortData = getDataFromId(portId.toString());
             const itemsToChange = [ fromPortData ].map(portData => {
                 const item = cloneDeep(itsRef.current[portData.itemId]);
                 if(portData.portId) {
@@ -225,6 +243,78 @@ const SVGWithZoom: FC<Props> = ({
         window.removeEventListener('mouseup', onMouseUp);
     }, []);
 
+    const onItemChange = useCallback<NonNullable<typeof onItemChangeClick>>((item) => {
+        onItemChangeClick?.(item);
+    }, []);
+
+    const onItemDelete = useCallback((removeItemId: keyof typeof items) => {
+        const changedPorts = Object.values(portsRef.current).map(port => {
+            const connectedData = port.connected ? getDataFromId(port.connected) : null;
+            if(connectedData?.itemId === removeItemId) {
+                return {
+                    ...port,
+                    connected: null
+                }
+            }
+            return port;
+        }).filter(port => {
+            const portData = getDataFromId(port.id);
+            return portData.itemId !== removeItemId;
+        });
+        setPorts({
+            ...keyBy(changedPorts, 'id')
+        });
+        // fromPairs(
+        //     toPairs(portsRef.current)
+        //     .filter(el => {
+        //         const portData = getDataFromId(el[0]);
+        //         return itemId !== portData.itemId;
+        //     })
+        //     .map((el) => [ el[0], el[1] ])
+        // )   
+        // setPorts({
+        //     ...fromPairs(
+        //         toPairs(portsRef.current)
+        //         .filter(el => {
+        //             const portData = getDataFromId(el[0]);
+        //             return itemId !== portData.itemId;
+        //         })
+        //         .map((el) => [ el[0], el[1] ])
+        //     )   
+        // });
+        const changedItems = Object.values(itsRef.current).map(item => {
+            const outputPortData = item.output ? getDataFromId(item.output) : null;
+            if(outputPortData?.itemId === removeItemId) {
+                return {
+                    ...item,
+                    output: null
+                }
+            }
+            if(item.outputs) {
+                return {
+                    ...item,
+                    outputs: item.outputs.map(el => {
+                        const connectedData = el.connected ? getDataFromId(el.connected) : null;
+                        if(connectedData?.itemId === removeItemId) {
+                            return {
+                                ...el,
+                                connected: null
+                            }
+                        }
+                        return el;
+                    })
+                }
+            }
+            return item
+        })
+        .filter(item => {
+            return item.id !== removeItemId;
+        });
+        setIts({
+            ...keyBy(changedItems, 'id')
+        });
+    }, []);
+
     return (
         <g id={'viewport'}>
         {
@@ -241,6 +331,10 @@ const SVGWithZoom: FC<Props> = ({
                         }}
                         onPortMouseDown={onPortMouseDown}
                         onPortMouseUp={onPortMouseUp}
+                        showChangeButton={!!onItemChangeClick}
+                        onChangeClick={onItemChange}
+                        showDeleteButton={!!allowDeleteElement}
+                        onDeleteClick={onItemDelete}
                     />
                 );
             })
