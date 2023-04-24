@@ -13,10 +13,33 @@ import './Svg.css';
 export type DiagramItemsType = {[key: string]: ItemType};
 
 type Props = {
+    /**
+     * Items for view
+     */
     items: DiagramItemsType;
+
+    /**
+     * Items change function  
+     * Trigger at drag, remove, connect, remove connect etc.
+     * @param newItems 
+     * @returns 
+     */
     onChange: (newItems: DiagramItemsType) => void;
+
+    /**
+     * Function to change item, if define then edit button will be view
+     * @param item 
+     * @returns 
+     */
     onItemChangeClick?: (item: DiagramItemsType[keyof DiagramItemsType]) => void;
-    onItemDeleteClick?: (item: DiagramItemsType[keyof DiagramItemsType]) => void;
+
+    /**
+     * Function to confirm delete item  
+     * must return "true" for delete item
+     * @param item 
+     * @returns 
+     */
+    onItemDeleteClick?: (item: DiagramItemsType[keyof DiagramItemsType]) => boolean;
 };
 
 export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
@@ -87,18 +110,15 @@ const SVGWithZoom: FC<Props> = ({
     onItemDeleteClick
 }) => {
 
-    const [ its, setIts ] = useState(items);
-    const itsRef = useRef(its);
+    const itsRef = useRef(items);
     useEffect(() => {
-        // console.log('its', its);
-        itsRef.current = its;
-        onChange(its);
-    }, [its]);
+        itsRef.current = items;
+    }, [items]);
     
     const { ports, changePorts, setPorts } = useContext(PortsContext);
     const portsRef = useRef(ports);
     useEffect(() => {
-        console.log('ports', ports);
+        // console.log('ports', ports);
         portsRef.current = ports;
     }, [ports]);
 
@@ -130,7 +150,7 @@ const SVGWithZoom: FC<Props> = ({
         changePorts({
             ...fromPairs(toPairs(portsRef.current).filter(el => [from, to].includes(el[0])).map((el) => [ el[0], { ...el[1], connected: null } ]))
         });
-        setIts({
+        onChange({
             ...itsRef.current,
             ...keyBy(itemsToChange, 'id')
         });
@@ -233,7 +253,7 @@ const SVGWithZoom: FC<Props> = ({
                 }
                 return item;
             });
-            setIts({
+            onChange({
                 ...itsRef.current,
                 ...keyBy(itemsToChange, 'id')
             });
@@ -243,11 +263,11 @@ const SVGWithZoom: FC<Props> = ({
         window.removeEventListener('mouseup', onMouseUp);
     }, []);
 
-    const onItemChange = useCallback<NonNullable<typeof onItemChangeClick>>((item) => {
+    const onItemChange = useCallback<ComponentProps<typeof Item>['onChangeClick']>((item) => {
         onItemChangeClick?.(item);
     }, []);
 
-    const onItemDelete = useCallback<NonNullable<typeof onItemDeleteClick>>(async function(item) {
+    const onItemDelete = useCallback<ComponentProps<typeof Item>['onDeleteClick']>(async function(item) {
         const removeItemId = item.id;
         const confirm = await onItemDeleteClick?.(item);
         if(!confirm) {
@@ -315,7 +335,7 @@ const SVGWithZoom: FC<Props> = ({
         .filter(item => {
             return item.id !== removeItemId;
         });
-        setIts({
+        onChange({
             ...keyBy(changedItems, 'id')
         });
     }, []);
@@ -323,13 +343,13 @@ const SVGWithZoom: FC<Props> = ({
     return (
         <g id={'viewport'}>
         {
-            toPairs(its).map(([ _, item ]) => {
+            toPairs(items).map(([ _, item ]) => {
                 return (
                     <Item
                         key={item.id}
                         item={item}
                         onChange={(newItem) => {
-                            setIts({
+                            onChange({
                                 ...itsRef.current,
                                 [newItem.id]: newItem
                             });

@@ -6,6 +6,7 @@ import { items8 } from './test2/mock';
 function App() {
 
   const [ its, setIts ] = useState(items8);
+
   useEffect(() => {
       console.log('newItems', its);
   }, [its]);
@@ -24,7 +25,7 @@ function App() {
         }}
         onItemDeleteClick={(item) => {
           console.log('item to delete', item);
-          const confirm = window.confirm('Are you sure to remove that item?');
+          const confirm = window.confirm('Are you sure want to remove that item?');
           return confirm;
         }}
       />
