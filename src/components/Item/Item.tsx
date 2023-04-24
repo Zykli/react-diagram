@@ -9,6 +9,8 @@ import { itemHeaderHeight, itemTextAreaHeight, itemSubItemHeight, portHeight, po
 import { Pencil } from '../Pencil';
 import { Trash } from '../Trash';
 
+const maxNameSymbols = 20;
+
 export type ItemProps = {
     item: ItemType,
     onChange: (item: ItemType) => void;
@@ -145,6 +147,24 @@ export const Item: FC<ItemProps> = ({
         return showDeleteButton && showButtons ? <Trash x={item.width - 35} y={itemHeaderHeight / 2} onClick={() => onDeleteClick(item)} /> : null;
     }, [showDeleteButton, onDeleteClick, showButtons]);
 
+    const headerProps = useMemo(() => {
+        return {
+            x: 15,
+            y: 4,
+            height: itemHeaderHeight - 10,
+            width: item.width - 30
+        }
+    }, [item.width]);
+
+    const textProps = useMemo(() => {
+        return {
+            x: 10,
+            y: itemHeaderHeight + 4,
+            height: itemTextAreaHeight,
+            width: item.width - 20
+        }
+    }, [item.width]);
+
     return (
         <>
         <svg
@@ -189,6 +209,21 @@ export const Item: FC<ItemProps> = ({
                         strokeWidth={1}
                         onMouseDown={onMouseDown}
                     />
+                    <foreignObject
+                        {...headerProps}
+                    >
+                        <div
+                            style={{
+                                color: '#fff',
+                                whiteSpace: 'nowrap',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                                textAlign: 'left'
+                            }}
+                        >
+                            {item.name}
+                        </div>
+                    </foreignObject>
                     {editButton}
                     {removeButton}
                     <Port
@@ -241,6 +276,19 @@ export const Item: FC<ItemProps> = ({
                         stroke="#000"
                         strokeWidth={1}
                     />
+                    <foreignObject
+                        {...textProps}
+                    >
+                        <div
+                            style={{
+                                textAlign: 'left',
+                                height: '100%',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            {item.text}
+                        </div>
+                    </foreignObject>
                     <g
                         x={0}
                         y={itemHeaderHeight + itemTextAreaHeight}

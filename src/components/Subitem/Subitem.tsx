@@ -48,6 +48,15 @@ export const Subitem: FC<Props> = ({
         };
     }, [itemX, itemY, itemWidth, position, itemId, data.connected, outputPortParams]);
 
+    const textProps = useMemo(() => {
+        return {
+            x: 5,
+            y: 4,
+            height: itemSubItemHeight - 10,
+            width: itemWidth - 20 - 20
+        };
+    }, []);
+
     return (
         <g
             className={'Subitem'}
@@ -69,6 +78,20 @@ export const Subitem: FC<Props> = ({
                     stroke="#000"
                     strokeWidth={1}
                 />
+                <foreignObject
+                    {...textProps}
+                >
+                    <div
+                        style={{
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            textAlign: 'left'
+                        }}
+                    >
+                        {data.text}
+                    </div>
+                </foreignObject>
                 <Port
                     gProps={{
                         onMouseDown: (e) => {
