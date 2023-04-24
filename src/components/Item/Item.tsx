@@ -207,7 +207,6 @@ export const Item: FC<ItemProps> = ({
                         fill="#2e5b9f"
                         stroke="#000"
                         strokeWidth={1}
-                        onMouseDown={onMouseDown}
                     />
                     <foreignObject
                         {...headerProps}
@@ -218,12 +217,27 @@ export const Item: FC<ItemProps> = ({
                                 whiteSpace: 'nowrap',
                                 textOverflow: 'ellipsis',
                                 overflow: 'hidden',
-                                textAlign: 'left'
+                                textAlign: 'left',
+                                pointerEvents: 'none'
                             }}
                         >
                             {item.name}
                         </div>
                     </foreignObject>
+                    <rect
+                        className={'rect'}
+                        ref={ref}
+                        width={item.width}
+                        height={itemHeaderHeight}
+                        r={10}
+                        rx={4}
+                        ry={4}
+                        style={{
+                            cursor: "grab"
+                        }}
+                        fill={'transparent'}
+                        onMouseDown={onMouseDown}
+                    />
                     {editButton}
                     {removeButton}
                     <Port
