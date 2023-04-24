@@ -1,6 +1,6 @@
 {
   "name": "react-mutliple-diagram",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "main": "./lib/index-lib.js",
   "author": "Zykli",
   "homepage": "https://zykli.github.io/react-diagram/demo",
@@ -26,6 +26,7 @@
     "clear": "rm -r lib",
     "copyCss": "npx cpy src/**/*.css !**/App.css !**/index.css ./lib --parents",
     "compile": "npm run clear && npx tsc && npm run copyCss",
+    "publishNew": "npm run compile && npx publish",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "buildDemo": "set \"PUBLIC_URL=/react-diagram/demo/\" && set \"BUILD_PATH=demo\" && react-scripts build",
