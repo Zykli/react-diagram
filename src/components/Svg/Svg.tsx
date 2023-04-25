@@ -1,6 +1,6 @@
 import { cloneDeep, fromPairs, keyBy, toPairs } from "lodash";
-import React, { ComponentProps, FC, createContext, createRef, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Value, ReactSVGPanZoom } from 'react-svg-pan-zoom';
+import React, { ComponentProps, FC, createContext, createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Value, ReactSVGPanZoom, pan } from 'react-svg-pan-zoom';
 import { Path } from "../Path";
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
 import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
@@ -9,6 +9,9 @@ import { convertXYtoViewPort, getDataFromId, getInputId } from "../../utils/util
 import { Item } from "../Item";
 import { useWindowSize } from '@react-hook/window-size';
 import './Svg.css';
+import { Loader } from '../Loader';
+
+const viewHeight = 600;
 
 export type DiagramItemsType = {[key: string]: ItemType};
 
@@ -46,7 +49,9 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
     ...props
 }) => {
 
-    const Viewer = useRef(null);
+    const Viewer = useRef<ReactSVGPanZoom>(null);
+
+    const [ inited, setInited ] = useState(false);
 
     const [value, setValue] = useState<Value>(initialZoom);
     const [ports, setPortsState] = useState<typeof initialPorts['ports']>(initialPorts.ports);
@@ -64,7 +69,12 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
         setPortsState(newPorts);
     }, []);
 
-    const [width, height] = useWindowSize({initialWidth: 800, initialHeight: 800});
+    const [width, height] = useWindowSize({initialWidth: 800, initialHeight: viewHeight});
+
+    useEffect(() => {
+        Viewer.current?.pan((width - 800) / 2, 0);
+        setInited(true);
+    }, [Viewer]);
 
     return (
         <PortsContext.Provider value={{ports, changePorts, setPorts}}>
@@ -72,9 +82,10 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
                 <div 
                     className={'ReactSVGPanZoom'}
                 >
+                    {!inited && <Loader />}
                     <ReactSVGPanZoom 
                         ref={Viewer}
-                        height={600}
+                        height={viewHeight}
                         width={width - 2}
                         tool={'auto'}
                         onChangeTool={() => {}}
@@ -91,7 +102,7 @@ export const SVGReactDiagram: FC<ComponentProps<typeof SVGWithZoom>> = ({
                         background="#fff"
                         SVGBackground="transparent"
                     >
-                        <svg id={'svgroot2'} width={800} height={800}>
+                        <svg width={800} height={viewHeight}>
                             <SVGWithZoom
                                 {...props}
                             />

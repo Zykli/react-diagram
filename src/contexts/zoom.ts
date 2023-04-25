@@ -2,7 +2,7 @@ import { createContext } from "react";
 import { Value } from "react-svg-pan-zoom";
 
 export const initialZoom: Value = {
-    SVGHeight: 400,
+    SVGHeight: 800,
     SVGWidth: 800,
     a: 1,
     b: 0,
@@ -15,10 +15,10 @@ export const initialZoom: Value = {
     focus: false,
     miniatureOpen: false,
     mode: "idle",
-    startX: null,
-    startY: null,
+    startX: 500,
+    startY: 100,
     version: 2,
-    viewerHeight: 400,
+    viewerHeight: 800,
     viewerWidth: 800
 };
 
