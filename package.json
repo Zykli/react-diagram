@@ -1,6 +1,6 @@
 {
   "name": "react-mutliple-diagram",
-  "version": "0.15.6",
+  "version": "0.15.7",
   "main": "./lib/index-lib.js",
   "author": "Zykli",
   "homepage": "https://zykli.github.io/react-diagram/demo",
