@@ -1,3 +1,7 @@
-.Port:not(.Connected):hover {
+.Port:not(.Connected):not(.Disabled):hover {
     filter: drop-shadow(0px 0px 3px rgb(0 0 0 / 1));
+}
+
+.Port:not(.Disabled):hover {
+    cursor: pointer;
 }

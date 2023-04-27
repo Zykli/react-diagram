@@ -61,7 +61,7 @@ export const Port: FC<Props> = ({
             <svg>
                 <rect
                     id={id}
-                    className={`Port${portData.connected ? ' Connected' : ''}`}
+                    className={`Port${portData.connected ? ' Connected' : ''}${disabled ? ' Disabled' : ''}`}
                     width={width || 10}
                     height={height || 10}
                     x={x || 0}
