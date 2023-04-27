@@ -58,6 +58,7 @@ export const Path: FC<Props> = ({
     const [ showRemoveCoords, setShowRemoveCoords ] = useState<{ x: number, y: number } | null>(null);
 
     const hideRemoveButton = useCallback(() => {
+        setCls('Path-hide');
         setShowRemoveCoords(null);
     }, []);
 
@@ -66,6 +67,7 @@ export const Path: FC<Props> = ({
         const mouseY = e.pageY;
         let coords = convertXYtoViewPort(mouseX, mouseY);
         if(!coords) return ;
+        setCls('Path-show');
         setShowRemoveCoords({
             x: coords.x,
             y: coords.y
@@ -94,8 +96,8 @@ export const Path: FC<Props> = ({
                     fill="none"
                     strokeWidth={8}
                     {...props}
-                    onMouseEnter={() => !isInfoPath && setCls('Path-show')}
-                    onMouseOut={() => !isInfoPath && setCls('Path-hide')}
+                    onMouseEnter={() => !showRemove && !isInfoPath && setCls('Path-show')}
+                    onMouseOut={() => !showRemove && !isInfoPath && setCls('Path-hide')}
                 />
                 <path
                     className="Path"
@@ -104,8 +106,8 @@ export const Path: FC<Props> = ({
                     strokeWidth={3}
                     stroke="#7c7c7c"
                     {...props}
-                    onMouseEnter={() => !isInfoPath && setCls('Path-show')}
-                    onMouseOut={() => !isInfoPath && setCls('Path-hide')}
+                    onMouseEnter={() => !showRemove && !isInfoPath && setCls('Path-show')}
+                    onMouseOut={() => !showRemove && !isInfoPath && setCls('Path-hide')}
                 />
                 {
                     showRemove &&
