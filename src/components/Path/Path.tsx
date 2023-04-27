@@ -85,7 +85,7 @@ export const Path: FC<Props> = ({
             showRemove && hideRemoveButton()
         }}>
             <g
-                className="Path-group"
+                className={`Path-group${isInfoPath ? ' InfoPath' : ''}`}
                 onClick={(e) => {
                     showRemoveButtonByClick(e);
                 }}

@@ -258,13 +258,13 @@ const SVGWithZoom: FC<Props> = ({
         const fromPort = newPathRef.current;
         const fromPortData = getDataFromId(newPathRef.current);
         const toPortData = getDataFromId(portId.toString());
-        if(toPortData.portType === 'output') {
+        if(toPortData.portType === 'output' || fromPortData.itemId === toPortData.itemId) {
             changePorts({
                 ...fromPairs(
                     toPairs(portsRef.current)
                         .filter(el => [fromPort].includes(el[0]))
                         .map((el) => [ el[0], { ...el[1], connected: null } ])
-                    )   
+                    )
             });
             setInitedNewPath('');
         } else
