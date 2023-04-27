@@ -1,4 +1,9 @@
 .ReactSVGPanZoom {
     border: 1px solid;
     position: relative;
+    cursor: auto;
+}
+
+.ReactSVGPanZoom.DragInited {
+    cursor: grabbing;
 }
