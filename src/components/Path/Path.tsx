@@ -2,7 +2,7 @@ import React, { FC, SVGAttributes, useCallback, useContext, useEffect, useMemo, 
 import ClickAwayListener from 'react-click-away-listener';
 import { PortsContext } from "../../contexts/ports";
 import { PemovePath } from "../RemovePath";
-import { getInputId } from "../../utils/utils";
+import { convertXYtoViewPort, getInputId } from "../../utils/utils";
 import './Path.css';
 
 const rectsOffset = 20;
@@ -20,19 +20,15 @@ export const Path: FC<Props> = ({
     d,
     ...props
 }) => {
-    const [ cls, setCls ] = useState('Path-hide');
 
-    const [ showRemove, setShowRemove ] = useState(false);
+    const [ cls, setCls ] = useState('Path-hide');
     
     const { ports } = useContext(PortsContext);
 
-    const data = useMemo(() => { 
+    const d1 = useMemo(() => { 
         const fromData = ports[fromPort];
         const toData = ports[toPort];
-        if(!fromData || !toData) return {
-            d: '',
-            average: {}
-        }; 
+        if(!fromData || !toData) return '';
         const from = {
             x: fromData.x + fromData.width,
             y: fromData.y + fromData.height / 2
@@ -56,16 +52,27 @@ export const Path: FC<Props> = ({
 
         const dt3 = `${to.x} ${to.y}`; 
 
-        return {
-            d: `M${dt1} C ${c1}, ${c2}, ${dt2}, S ${s}, ${dt3}`,
-            average: {
-                averageX,
-                averageY
-            }
-        };
+        return `M${dt1} C ${c1}, ${c2}, ${dt2}, S ${s}, ${dt3}`;
     }, [fromPort, toPort, ports[fromPort], ports[toPort]]);
 
-    const hideRemoveButton = useCallback(() => setShowRemove(false), []);
+    const [ showRemoveCoords, setShowRemoveCoords ] = useState<{ x: number, y: number } | null>(null);
+
+    const hideRemoveButton = useCallback(() => {
+        setShowRemoveCoords(null);
+    }, []);
+
+    const showRemoveButtonByClick = useCallback<NonNullable<SVGAttributes<SVGGElement>['onClick']>>((e) => {
+        const mouseX = e.pageX;
+        const mouseY = e.pageY;
+        let coords = convertXYtoViewPort(mouseX, mouseY);
+        if(!coords) return ;
+        setShowRemoveCoords({
+            x: coords.x,
+            y: coords.y
+        });
+    }, []);
+
+    const showRemove = useMemo(() => !!showRemoveCoords, [showRemoveCoords]);
 
     const isInfoPath = useMemo(() => {
         return toPort === getInputId('cursor');
@@ -78,12 +85,12 @@ export const Path: FC<Props> = ({
             <g
                 className="Path-group"
                 onClick={(e) => {
-                    setShowRemove(true);
+                    showRemoveButtonByClick(e);
                 }}
             >                
                 <path
                     className={`${cls}`}
-                    d={data.d}
+                    d={d1}
                     fill="none"
                     strokeWidth={8}
                     {...props}
@@ -92,7 +99,7 @@ export const Path: FC<Props> = ({
                 />
                 <path
                     className="Path"
-                    d={data.d}
+                    d={d1}
                     fill="none"
                     strokeWidth={3}
                     stroke="#7c7c7c"
@@ -106,43 +113,11 @@ export const Path: FC<Props> = ({
                         onClick={() => {
                             onRemove(fromPort, toPort);
                         }}
-                        x={(data.average.averageX || ports[fromPort].x + 20)}
-                        y={(data.average.averageY || ports[fromPort].y) - 15}
+                        x={(showRemoveCoords?.x || ports[fromPort].x + 20)}
+                        y={(showRemoveCoords?.y || ports[fromPort].y) - 15}
                     />
                 }
             </g>
         </ClickAwayListener>
     );
-};
-
-export const PathTest: FC<Props> = ({
-    d,
-    ...props
-}) => {
-
-    const [ cls, setCls ] = useState('path-hide');
-
-    return (
-        <g>  
-            <path
-                className={cls}
-                d={d}
-                fill="none"
-                strokeWidth={8}
-                {...props}
-                onMouseEnter={() => setCls('path-show')}
-                onMouseOut={() => setCls('path-hide')}
-            />
-            <path
-                className="path"
-                d={d}
-                fill="none"
-                strokeWidth={3}
-                stroke="#7c7c7c"
-                {...props}
-                onMouseEnter={() => setCls('path-show')}
-                onMouseOut={() => setCls('path-hide')}
-            />
-        </g>
-    )
 };
