@@ -12,7 +12,6 @@ export type Item = {
     x: number;
     y: number;
     width: number;
-    items?: Item[];
     input: string | null;
     output: string | null;
     outputs?: Connector[];

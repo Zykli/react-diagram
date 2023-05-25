@@ -11,7 +11,7 @@ function App() {
       console.log('newItems', its);
   }, [its]);
 
-  const onChangeItems: ComponentProps<typeof SVGReactDiagram>['onChange'] = useCallback((newItems) => {
+  const onChangeItems: ComponentProps<typeof SVGReactDiagram>['onChange'] = useCallback((newItems, connections) => {
     setIts(newItems);
   }, []);
 

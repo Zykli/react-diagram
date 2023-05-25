@@ -5,7 +5,7 @@ import { Path } from "../Path";
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
 import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
 import { Item as ItemType } from "../../utils/types";
-import { convertXYtoViewPort, getDataFromId, getInputId } from "../../utils/utils";
+import { convertXYtoViewPort, getDataFromId, getInputId, prepareConnectionsFromItems } from "../../utils/utils";
 import { Item } from "../Item";
 import { useWindowSize } from '@react-hook/window-size';
 import './Svg.css';
@@ -15,6 +15,8 @@ import { Omit } from '../../utils/utils.types';
 const viewHeight = 600;
 
 export type DiagramItemsType = {[key: string]: ItemType};
+
+export type Connections = {[key: string]: ItemType['id'] | null};
 
 type Props = {
     /**
@@ -28,7 +30,7 @@ type Props = {
      * @param newItems 
      * @returns 
      */
-    onChange: (newItems: DiagramItemsType) => void;
+    onChange: (newItems: DiagramItemsType, connections: Connections) => void;
 
     /**
      * Function to change item, if define then edit button will be view
@@ -188,10 +190,12 @@ const SVGWithZoom: FC<Props> = ({
         changePorts({
             ...fromPairs(toPairs(portsRef.current).filter(el => [from, to].includes(el[0])).map((el) => [ el[0], { ...el[1], connected: null } ]))
         });
-        onChange({
+        const newItems = {
             ...itsRef.current,
             ...keyBy(itemsToChange, 'id')
-        });
+        };
+        const connections = prepareConnectionsFromItems(newItems);
+        onChange(newItems, connections);
     }, []);
     
     const onMouseMove = useCallback((e: MouseEvent) => {
@@ -293,10 +297,12 @@ const SVGWithZoom: FC<Props> = ({
                 }
                 return item;
             });
-            onChange({
+            const newItems = {
                 ...itsRef.current,
                 ...keyBy(itemsToChange, 'id')
-            });
+            };
+            const connections = prepareConnectionsFromItems(newItems);
+            onChange(newItems, connections);
             setInitedNewPath('');
         }
         onDragEnd?.();
@@ -358,9 +364,12 @@ const SVGWithZoom: FC<Props> = ({
         .filter(item => {
             return item.id !== removeItemId;
         });
-        onChange({
+        const newItems = {
+            ...itsRef.current,
             ...keyBy(changedItems, 'id')
-        });
+        };
+        const connections = prepareConnectionsFromItems(newItems);
+        onChange(newItems, connections);
     }, []);
 
     return (
@@ -372,10 +381,12 @@ const SVGWithZoom: FC<Props> = ({
                         key={item.id}
                         item={item}
                         onChange={(newItem) => {
-                            onChange({
+                            const newItems = {
                                 ...itsRef.current,
                                 [newItem.id]: newItem
-                            });
+                            };
+                            const connections = prepareConnectionsFromItems(newItems);
+                            onChange(newItems, connections);
                         }}
                         onPortMouseDown={onPortMouseDown}
                         onPortMouseUp={onPortMouseUp}

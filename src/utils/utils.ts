@@ -1,3 +1,6 @@
+import { flatten, fromPairs } from "lodash";
+import { Connections, DiagramItemsType } from "../components/Svg";
+
 const idSplitter = '-';
 
 type PortData = {
@@ -41,4 +44,24 @@ export const convertXYtoViewPort = (x: number, y: number) => {
     point.y = y - rooteltPosition.y
     let ctm = rec.getCTM()?.inverse();
     return point.matrixTransform(ctm)
+};
+
+export const prepareConnectionsFromItems = (items: DiagramItemsType) => {
+    return flatten(Object.values(items).map(el => {
+        const items = el.outputs?.map(output => {
+            return [ `${el.id}/${output.id}`, output.connected ] as const;
+        }) || null;
+        const rez = [
+            [ el.id, el.output ] as const
+        ];
+        if(items) {
+            rez.push(...items);
+        };
+        return rez;
+    })).reduce((a, c) => {
+        return {
+            ...a,
+            [c[0]]: c[1]
+        }
+    }, {} as Connections);
 };
