@@ -3,7 +3,7 @@ import { Connections, DiagramItemsType } from "../components/Svg";
 import { Item } from "./types";
 import { itemHeaderHeight, itemSubItemHeight, itemTextAreaHeight } from "./constanst";
 
-const idSplitter = '-';
+const idSplitter = '/';
 
 type PortData = {
     itemId: string;

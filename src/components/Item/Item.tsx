@@ -132,7 +132,7 @@ export const Item: FC<ItemProps> = ({
     }, [state.x, state.y, item.width, item.id, item.output, outputPortParams]);
 
     const disableOutputPort = useMemo(() => {
-        if(item.outputs && !item.outputs.filter(el => el.connected === null).length) {
+        if(item.outputs && item.outputs.length && !item.outputs.filter(el => el.connected === null).length) {
             return true;
         }
         return false;
