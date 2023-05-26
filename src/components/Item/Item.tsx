@@ -1,15 +1,13 @@
-import React, { FC, createRef, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { FC, createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Item as ItemType } from '../../utils/types';
 import { ZoomContext } from '../../contexts/zoom';
-import { convertXYtoViewPort, getInputId, getOutputId } from '../../utils/utils';
+import { convertXYtoViewPort, getInputId, getItemHeight, getOutputId } from '../../utils/utils';
 import { Port } from '../Port';
 import { Ports } from '../../contexts/ports';
 import { Subitem } from '../Subitem';
 import { itemHeaderHeight, itemTextAreaHeight, itemSubItemHeight, portHeight, portWidth } from '../../utils/constanst';
 import { Pencil } from '../Pencil';
 import { Trash } from '../Trash';
-
-const maxNameSymbols = 20;
 
 export type ItemProps = {
     item: ItemType,
@@ -34,6 +32,14 @@ export const Item: FC<ItemProps> = ({
 }) => {
 
     const [state, setState] = useState({x: item.x, y: item.y});
+    useEffect(() => {
+        if(state.x !== item.x || state.y !== item.y) {
+            setState({
+                x: item.x,
+                y: item.y
+            });
+        }
+    }, [item.x, item.y]);
 
     const ref = createRef<SVGRectElement>();
     const svgRef = createRef<SVGSVGElement>();
@@ -45,8 +51,12 @@ export const Item: FC<ItemProps> = ({
         const mouseY = e.pageY;
         let coords = convertXYtoViewPort(mouseX, mouseY);
         if(!coords) return ;
-        const newX = coords.x - offsetX;
-        const newY = coords.y - offsetY;
+        let newX = coords.x - offsetX;
+        let newY = coords.y - offsetY;
+        // if(newX < 20) newX = 20;
+        // if(newY < 20) newY = 20;
+        // if(newX < 0 - item.width) newX = 0 - item.width;
+        // if(newY < 0 - itemHeight) newY = 0 - itemHeight;
         setState({
             x: newX,
             y: newY
@@ -129,11 +139,7 @@ export const Item: FC<ItemProps> = ({
     }, [item.outputs]);
 
     const itemHeight = useMemo(() => {
-        const baseHeight = itemHeaderHeight + itemTextAreaHeight;
-        if(item.outputs) {
-            return baseHeight + item.outputs.length * (itemSubItemHeight + 10);
-        }
-        return baseHeight;
+        return getItemHeight(item);
     }, [item.outputs]);
 
     const [ showButtons, setShowButtons ] = useState(false);

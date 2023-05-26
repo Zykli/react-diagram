@@ -5,14 +5,13 @@ import { Path } from "../Path";
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
 import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
 import { Item as ItemType } from "../../utils/types";
-import { convertXYtoViewPort, getDataFromId, getInputId, prepareConnectionsFromItems } from "../../utils/utils";
+import { convertXYtoViewPort, getDataFromId, getInputId, getItemHeight, prepareConnectionsFromItems } from "../../utils/utils";
 import { Item } from "../Item";
 import { useWindowSize } from '@react-hook/window-size';
 import './Svg.css';
 import { Loader } from '../Loader';
 import { Omit } from '../../utils/utils.types';
-
-const viewHeight = 600;
+import { betweenItemsAreaIfPositionsIsZero, viewHeight } from "../../utils/constanst";
 
 export type DiagramItemsType = {[key: string]: ItemType};
 
@@ -86,11 +85,6 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
 
     const [width, height] = useWindowSize({initialWidth: 800, initialHeight: viewHeight});
 
-    useEffect(() => {
-        Viewer.current?.pan((width - 800) / 2, 0);
-        setInited(true);
-    }, [Viewer]);
-
     const [ dragInited, setDragInited ] = useState(false);
 
     const onDragStart = useCallback(() => {
@@ -99,6 +93,43 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
 
     const onDragEnd = useCallback(() => {
         setDragInited(false);
+    }, []);
+
+    const areaWidth = useMemo(() => {
+        return Math.max(...toPairs(props.items).map(([_, item]) => item.x + item.width));
+    }, []);
+
+    const areaHeigth = useMemo(() => {
+        return Math.max(...toPairs(props.items).map(([_, item]) => item.y + getItemHeight(item)));
+    }, []);
+
+    useEffect(() => {
+        Viewer.current?.pan((width - areaWidth) / 2, (viewHeight - areaHeigth) / 2 );
+        setInited(true);
+    }, []);
+
+    // set items inline if all coords equals zero
+    useEffect(() => {
+        const isZero = toPairs(props.items).reduce((a, [ _, item ]) => {
+            return !a ? a : !item.x || !item.y
+        }, true);
+        if(isZero) {
+            let nextX = 0;
+            const itemsInLine = fromPairs(toPairs(props.items).map(([id, item], idx) => {
+                if(!idx) return [id, item];
+                const x = nextX + item.width + betweenItemsAreaIfPositionsIsZero;
+                nextX = x;
+                return [
+                    id,
+                    {
+                        ...item,
+                        x
+                    }
+                ]
+            }));
+            const connections = prepareConnectionsFromItems(itemsInLine);
+            props.onChange(itemsInLine, connections);
+        }
     }, []);
 
     return (
@@ -120,14 +151,14 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
                         // onPan={e => console.log('pan')}
                         // onClick={event => console.log('click', event.x, event.y, event.originalEvent)}
                         detectAutoPan={false}
+                        preventPanOutside={false}
                         disableDoubleClickZoomWithToolAuto={true}
                         customToolbar={() => <></>}
                         customMiniature={() => { return <></> }}
-                        style={{ margin: '0 auto' }}
-                        background="#fff"
+                        background="transparent"
                         SVGBackground="transparent"
                     >
-                        <svg width={800} height={viewHeight}>
+                        <svg width={areaWidth} height={areaHeigth}>
                             <SVGWithZoom
                                 {...props}
                                 onDragStart={onDragStart}

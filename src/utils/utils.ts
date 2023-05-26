@@ -1,5 +1,7 @@
 import { flatten, fromPairs } from "lodash";
 import { Connections, DiagramItemsType } from "../components/Svg";
+import { Item } from "./types";
+import { itemHeaderHeight, itemSubItemHeight, itemTextAreaHeight } from "./constanst";
 
 const idSplitter = '-';
 
@@ -64,4 +66,12 @@ export const prepareConnectionsFromItems = (items: DiagramItemsType) => {
             [c[0]]: c[1]
         }
     }, {} as Connections);
+};
+
+export const getItemHeight = (item: Item) => {
+    const baseHeight = itemHeaderHeight + itemTextAreaHeight;
+    if(item.outputs) {
+        return baseHeight + item.outputs.length * (itemSubItemHeight + 10);
+    }
+    return baseHeight;
 };

@@ -2,10 +2,12 @@ import React, { ComponentProps, useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { SVGReactDiagram } from './components/Svg';
 import { items8 } from './test2/mock';
+import { items8 as itemsNull } from './test2/mock.null';
 
 function App() {
 
   const [ its, setIts ] = useState(items8);
+  // const [ its, setIts ] = useState(itemsNull);
 
   useEffect(() => {
       console.log('newItems', its);
