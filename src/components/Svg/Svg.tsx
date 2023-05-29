@@ -60,12 +60,18 @@ type Props = {
 
     className?: string;
 
+    /**
+     * loading state to show plug
+     */
+    isLoading?: boolean;
+
     loadingText?: ReactNode;
 };
 
-export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDragStart' | 'onDragEnd'>> = ({
+export const SVGReactDiagram: FC<Omit<Props, 'onDragStart' | 'onDragEnd'>> = ({
     className,
     loadingText,
+    isLoading,
     ...props
 }) => {
 
@@ -146,6 +152,10 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
         return rootDiv.current?.clientWidth === width;
     }, [width]);
 
+    const loaded = useMemo(() => {
+        return typeof isLoading !== undefined ? !isLoading : true;
+    }, [isLoading]);
+
     return (
         <div 
             ref={rootDiv}
@@ -153,7 +163,7 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
         >
             <PortsContext.Provider value={{ports, changePorts, setPorts}}>
                 <ZoomContext.Provider value={value}>
-                    {!inited && !widthInited && <Loader text={loadingText}/>}
+                    {loaded && !inited && !widthInited && <Loader text={loadingText}/>}
                     <ReactSVGPanZoom 
                         ref={Viewer}
                         height={viewHeight}
@@ -187,7 +197,7 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
     )
 };
 
-const SVGWithZoom: FC<Props> = ({
+const SVGWithZoom: FC<Omit<Props, 'loadingText' | 'isLoading' | 'className' >> = ({
     items,
     onChange,
     onItemChangeClick,
