@@ -4,10 +4,21 @@ import { SVGReactDiagram } from './components/Svg';
 import { items8 } from './test2/mock';
 import { items8 as itemsNull } from './test2/mock.null';
 
+const items = items8;
+// const items = itemsNull;
+
 function App() {
 
-  const [ its, setIts ] = useState(items8);
-  // const [ its, setIts ] = useState(itemsNull);
+  const [ its, setIts ] = useState({});
+
+  const [ isLoading, setIsLoading ] = useState(true);
+
+  useEffect(() => {
+      setTimeout(() => {
+        setIts(items);
+        setIsLoading(false);
+      }, 2500);
+  }, []);
 
   useEffect(() => {
       console.log('newItems', its);
@@ -20,7 +31,8 @@ function App() {
   return (
     <div className="App">
       <SVGReactDiagram
-        items={its}
+        isLoading={isLoading}
+        items={isLoading ? {} : its}
         onChange={onChangeItems}
         onItemChangeClick={(item) => {
           console.log('item to change', item);

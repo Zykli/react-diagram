@@ -79,7 +79,7 @@ export const SVGReactDiagram: FC<Omit<Props, 'onDragStart' | 'onDragEnd'>> = ({
 
     const Viewer = useRef<ReactSVGPanZoom>(null);
 
-    const [ inited, setInited ] = useState(false);
+    const [inited, setInited] = useState(false);
 
     const [value, setValue] = useState<Value>(initialZoom);
     const [ports, setPortsState] = useState<typeof initialPorts['ports']>(initialPorts.ports);
@@ -110,22 +110,34 @@ export const SVGReactDiagram: FC<Omit<Props, 'onDragStart' | 'onDragEnd'>> = ({
     }, []);
 
     const areaWidth = useMemo(() => {
-        return Math.max(...toPairs(props.items).map(([_, item]) => item.x + item.width));
-    }, []);
+        return Math.max(...toPairs(props.items).map(([_, item]) => item.x + item.width), 0);
+    }, [isLoading]);
+    const areaWidthRef = useRef(areaWidth);
+    useEffect(() => {
+        areaWidthRef.current = areaWidth;
+    }, [areaWidth]);
 
     const areaHeigth = useMemo(() => {
-        return Math.max(...toPairs(props.items).map(([_, item]) => item.y + getItemHeight(item)));
-    }, []);
+        return Math.max(...toPairs(props.items).map(([_, item]) => item.y + getItemHeight(item)), 0);
+    }, [isLoading]);
+    const areaHeigthRef = useRef(areaHeigth);
+    useEffect(() => {
+        areaHeigthRef.current = areaHeigth;
+    }, [areaWidth]);
 
     useEffect(() => {
         if(!rootDiv.current) return ;
         const width = rootDiv.current.clientWidth;
-        Viewer.current?.pan((width - areaWidth) / 2, (viewHeight - areaHeigth) / 2 );
-        setInited(true);
-    }, []);
+        if(areaWidthRef.current && areaHeigthRef.current) {
+            Viewer.current?.pan((width - areaWidthRef.current) / 2, (viewHeight - areaHeigthRef.current) / 2 );
+            setInited(true);
+        }
+    }, [isLoading]);
 
     // set items inline if all coords equals zero
+
     useEffect(() => {
+        if(isLoading) return;
         const isZero = toPairs(props.items).reduce((a, [ _, item ]) => {
             return !a ? a : !item.x || !item.y
         }, true);
@@ -146,7 +158,7 @@ export const SVGReactDiagram: FC<Omit<Props, 'onDragStart' | 'onDragEnd'>> = ({
             const connections = prepareConnectionsFromItems(itemsInLine);
             props.onChange(itemsInLine, connections);
         }
-    }, []);
+    }, [isLoading]);
 
     const widthInited = useMemo(() => {
         return rootDiv.current?.clientWidth === width;
@@ -156,6 +168,8 @@ export const SVGReactDiagram: FC<Omit<Props, 'onDragStart' | 'onDragEnd'>> = ({
         return typeof isLoading !== undefined ? !isLoading : true;
     }, [isLoading]);
 
+    // console.log('loaded', loaded, 'inited', inited, 'widthInited', widthInited);
+
     return (
         <div 
             ref={rootDiv}
@@ -163,7 +177,7 @@ export const SVGReactDiagram: FC<Omit<Props, 'onDragStart' | 'onDragEnd'>> = ({
         >
             <PortsContext.Provider value={{ports, changePorts, setPorts}}>
                 <ZoomContext.Provider value={value}>
-                    {loaded && !inited && !widthInited && <Loader text={loadingText}/>}
+                    {(!loaded || !inited || !widthInited) && <Loader text={loadingText}/>}
                     <ReactSVGPanZoom 
                         ref={Viewer}
                         height={viewHeight}
