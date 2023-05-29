@@ -1,5 +1,5 @@
 import { fromPairs, toPairs } from "lodash";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { ComponentProps, FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Value, ReactSVGPanZoom } from 'react-svg-pan-zoom';
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
 import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
@@ -10,6 +10,7 @@ import { Omit } from '../../utils/utils.types';
 import { betweenItemsAreaIfPositionsIsZero, viewHeight } from "../../utils/constanst";
 import { useRefResize } from "../../utils/hooks";
 import { SvgProps, SVGWithZoom } from '../Svg';
+import { Menu } from '../Menu';
 
 export const SVGReactDiagram: FC<Omit<SvgProps, 'onDragStart' | 'onDragEnd'>> = ({
     className,
@@ -40,7 +41,7 @@ export const SVGReactDiagram: FC<Omit<SvgProps, 'onDragStart' | 'onDragEnd'>> = 
         setPortsState(newPorts);
     }, []);
 
-    const [ width ] = useRefResize(rootDiv.current, { initialWidth: 800, initialHeight: viewHeight });
+    const [ width, height ] = useRefResize(rootDiv.current, { initialWidth: 800, initialHeight: viewHeight });
 
     const [ dragInited, setDragInited ] = useState(false);
 
@@ -72,7 +73,7 @@ export const SVGReactDiagram: FC<Omit<SvgProps, 'onDragStart' | 'onDragEnd'>> = 
         if(!rootDiv.current) return ;
         const width = rootDiv.current.clientWidth;
         if(areaWidthRef.current && areaHeigthRef.current) {
-            Viewer.current?.pan((width - areaWidthRef.current) / 2, (viewHeight - areaHeigthRef.current) / 2 );
+            Viewer.current?.pan((width - areaWidthRef.current) / 2, (height - areaHeigthRef.current) / 2 );
             setInited(true);
         }
     }, [isLoading]);
@@ -111,8 +112,6 @@ export const SVGReactDiagram: FC<Omit<SvgProps, 'onDragStart' | 'onDragEnd'>> = 
         return typeof isLoading !== undefined ? !isLoading : true;
     }, [isLoading]);
 
-    // console.log('loaded', loaded, 'inited', inited, 'widthInited', widthInited);
-
     return (
         <div 
             ref={rootDiv}
@@ -121,9 +120,12 @@ export const SVGReactDiagram: FC<Omit<SvgProps, 'onDragStart' | 'onDragEnd'>> = 
             <PortsContext.Provider value={{ports, changePorts, setPorts}}>
                 <ZoomContext.Provider value={value}>
                     {(!loaded || !inited || !widthInited) && <Loader text={loadingText}/>}
+                    <Menu
+                        rootRef={rootDiv.current}
+                    />
                     <ReactSVGPanZoom 
                         ref={Viewer}
-                        height={viewHeight}
+                        height={height}
                         width={width}
                         tool={'auto'}
                         onChangeTool={() => {}}

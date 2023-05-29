@@ -3,6 +3,7 @@
     position: relative;
     cursor: auto;
     overflow: hidden;
+    background: #fff;
 }
 
 /* .ReactMultipleDiagram rect[fill="transparent"] {

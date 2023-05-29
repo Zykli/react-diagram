@@ -27,10 +27,16 @@ type InitialOptions = {
  * @param param1 - initial options object like { initialWidth?: number; initialHeight?: number; }
  * @returns [ width, height ]
  */
-export const useRefResize = (element: HTMLElement | null, {
-  initialWidth,
-  initialHeight
-}: InitialOptions) => {
+export const useRefResize = (
+  element: HTMLElement | null,
+  {
+    initialWidth,
+    initialHeight
+  }: InitialOptions
+) => {
+
+  const inFullScreenRef = useRef(false);
+
   const [ sizes, setSizes ] = useState({
     width: initialWidth || document.body.clientWidth,
     heigth: initialHeight || document.body.clientHeight
@@ -41,8 +47,9 @@ export const useRefResize = (element: HTMLElement | null, {
   }, [sizes]);
 
   const onRezise = useCallback(() => {
+    inFullScreenRef.current = document.fullscreenElement === element;
     const width = element?.clientWidth || document.body.clientWidth;
-    const heigth = element?.clientHeight || document.body.clientHeight;
+    const heigth = (!inFullScreenRef.current ? initialHeight : element?.clientHeight) || document.body.clientHeight;
     if(sizesRef.current.width !== width || sizesRef.current.heigth !== heigth) {
       setSizes({
         width,
