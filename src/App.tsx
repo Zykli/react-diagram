@@ -14,12 +14,25 @@ function App() {
 
   const [ isLoading, setIsLoading ] = useState(true);
 
+  const getData = useCallback(() => {
+    setIts(items);
+    setIsLoading(false);
+  }, []);
+
   useEffect(() => {
     setTimeout(() => {
-      setIts(items);
-      setIsLoading(false);
+      getData();
     }, 2500);
   }, []);
+
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     setIsLoading(true);
+  //     setTimeout(() => {
+  //       getData();
+  //     }, 2500);
+  //   }, 5000);
+  // }, []);
 
   useEffect(() => {
     console.log('newItems', its);

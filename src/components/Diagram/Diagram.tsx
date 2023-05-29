@@ -71,9 +71,14 @@ export const SVGReactDiagram: FC<Omit<SvgProps, 'onDragStart' | 'onDragEnd'>> = 
 
     useEffect(() => {
         if(!rootDiv.current) return ;
+        (window as any).ref = Viewer.current;
         const width = rootDiv.current.clientWidth;
         if(areaWidthRef.current && areaHeigthRef.current) {
-            Viewer.current?.pan((width - areaWidthRef.current) / 2, (height - areaHeigthRef.current) / 2 );
+            Viewer.current?.setValue({
+                ...Viewer.current?.getValue(),
+                e: (width - areaWidthRef.current) / 2,
+                f: (height - areaHeigthRef.current) / 2
+            });
             setInited(true);
         }
     }, [isLoading]);
