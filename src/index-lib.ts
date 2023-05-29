@@ -1,1 +1,1 @@
-export * from './components/Svg'
+export * from './components/Diagram'

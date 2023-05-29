@@ -1,6 +1,6 @@
 import React, { ComponentProps, useCallback, useEffect, useState } from 'react';
 import './App.css';
-import { SVGReactDiagram } from './components/Svg';
+import { SVGReactDiagram } from './components/Diagram';
 import { items8 } from './test2/mock';
 import { items8 as itemsNull } from './test2/mock.null';
 
@@ -10,18 +10,19 @@ const items = items8;
 function App() {
 
   const [ its, setIts ] = useState({});
+  // const [ its, setIts ] = useState(items);
 
   const [ isLoading, setIsLoading ] = useState(true);
 
   useEffect(() => {
-      setTimeout(() => {
-        setIts(items);
-        setIsLoading(false);
-      }, 2500);
+    setTimeout(() => {
+      setIts(items);
+      setIsLoading(false);
+    }, 2500);
   }, []);
 
   useEffect(() => {
-      console.log('newItems', its);
+    console.log('newItems', its);
   }, [its]);
 
   const onChangeItems: ComponentProps<typeof SVGReactDiagram>['onChange'] = useCallback((newItems, connections) => {
@@ -33,6 +34,7 @@ function App() {
       <SVGReactDiagram
         isLoading={isLoading}
         items={isLoading ? {} : its}
+        // items={its}
         onChange={onChangeItems}
         onItemChangeClick={(item) => {
           console.log('item to change', item);
