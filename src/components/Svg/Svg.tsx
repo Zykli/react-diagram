@@ -1,5 +1,5 @@
 import { cloneDeep, fromPairs, keyBy, toPairs } from "lodash";
-import React, { ComponentProps, FC, createContext, createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { ComponentProps, FC, ReactNode, createContext, createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Value, ReactSVGPanZoom, pan } from 'react-svg-pan-zoom';
 import { Path } from "../Path";
 import { ZoomContext, initialZoom } from "../../contexts/zoom";
@@ -7,11 +7,11 @@ import { Ports, PortsContext, initialPorts } from "../../contexts/ports";
 import { Item as ItemType } from "../../utils/types";
 import { convertXYtoViewPort, getDataFromId, getInputId, getItemHeight, prepareConnectionsFromItems } from "../../utils/utils";
 import { Item } from "../Item";
-import { useWindowSize } from '@react-hook/window-size';
 import './Svg.css';
 import { Loader } from '../Loader';
 import { Omit } from '../../utils/utils.types';
 import { betweenItemsAreaIfPositionsIsZero, viewHeight } from "../../utils/constanst";
+import { useRefResize } from "../../utils/hooks";
 
 export type DiagramItemsType = {[key: string]: ItemType};
 
@@ -57,11 +57,19 @@ type Props = {
      * @returns 
      */
     onDragEnd?: () => void;
+
+    className?: string;
+
+    loadingText?: ReactNode;
 };
 
 export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDragStart' | 'onDragEnd'>> = ({
+    className,
+    loadingText,
     ...props
 }) => {
+
+    const rootDiv = useRef<HTMLDivElement>(null);
 
     const Viewer = useRef<ReactSVGPanZoom>(null);
 
@@ -83,7 +91,7 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
         setPortsState(newPorts);
     }, []);
 
-    const [width, height] = useWindowSize({initialWidth: 800, initialHeight: viewHeight});
+    const [ width ] = useRefResize(rootDiv.current, { initialWidth: 800, initialHeight: viewHeight });
 
     const [ dragInited, setDragInited ] = useState(false);
 
@@ -104,6 +112,8 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
     }, []);
 
     useEffect(() => {
+        if(!rootDiv.current) return ;
+        const width = rootDiv.current.clientWidth;
         Viewer.current?.pan((width - areaWidth) / 2, (viewHeight - areaHeigth) / 2 );
         setInited(true);
     }, []);
@@ -132,17 +142,22 @@ export const SVGReactDiagram: FC<Omit<ComponentProps<typeof SVGWithZoom>, 'onDra
         }
     }, []);
 
+    const widthInited = useMemo(() => {
+        return rootDiv.current?.clientWidth === width;
+    }, [width]);
+
     return (
         <div 
-            className={`ReactSVGPanZoom${dragInited ? ' DragInited' : ''}`}
+            ref={rootDiv}
+            className={`ReactMultipleDiagram${dragInited ? ' DragInited' : ''}${className ? ` ${className}` : ''}`}
         >
             <PortsContext.Provider value={{ports, changePorts, setPorts}}>
                 <ZoomContext.Provider value={value}>
-                    {!inited && <Loader />}
+                    {!inited && !widthInited && <Loader text={loadingText}/>}
                     <ReactSVGPanZoom 
                         ref={Viewer}
                         height={viewHeight}
-                        width={width - 2}
+                        width={width}
                         tool={'auto'}
                         onChangeTool={() => {}}
                         value={value}

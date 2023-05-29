@@ -1,15 +1,15 @@
-.ReactSVGPanZoom {
+.ReactMultipleDiagram {
     border: 1px solid;
     position: relative;
     cursor: auto;
     overflow: hidden;
 }
 
-/* .ReactSVGPanZoom rect[fill="transparent"] {
+/* .ReactMultipleDiagram rect[fill="transparent"] {
     stroke: #000;
     stroke-width: 1;
 } */
 
-.ReactSVGPanZoom.DragInited {
+.ReactMultipleDiagram.DragInited {
     cursor: grabbing;
 }

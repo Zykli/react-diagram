@@ -12,7 +12,6 @@
     "url": "https://github.com/Zykli/react-diagram"
   },
   "dependencies": {
-    "@react-hook/window-size": "^3.1.1",
     "react-click-away-listener": "^2.2.3",
     "lodash": "^4.17.21",
     "react-svg-pan-zoom": "^3.12.1"

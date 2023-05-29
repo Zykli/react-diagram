@@ -1,10 +1,19 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 import './Loader.css';
 
-export const Loader: FC<{}> = ({}) => {
+export const Loader: FC<{
+    text?: ReactNode;
+}> = ({
+    text
+}) => {
+
+    const info = useMemo(() => {
+        return text || 'Loading...';
+    }, [text]);
+
     return (
         <div className={'DiagramLoader'}>
-            Loading...
+            {info}
         </div>
     )
 };

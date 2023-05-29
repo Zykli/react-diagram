@@ -49,5 +49,6 @@ function App() {
 | ------------- | ------------- |
 | items  | Object with items to view |
 | onChange  | function `(newItems) => void`  |
-| onItemChangeClick  | function `(item) => void` fro edit item |
-| onItemDeleteClick  | function `(item) => void` for confirm delete item, need return true for delete, or false to disable delete |
+| loadingText  | text on initializing plug  |
+| onItemChangeClick  | function `(item) => void` fro edit item, if defined then show edit button |
+| onItemDeleteClick  | function `(item) => void` for confirm delete item, need return true for delete, or false to disable delete, if defined then show remove button |
