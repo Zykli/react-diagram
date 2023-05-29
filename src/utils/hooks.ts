@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { initialZoom } from "../contexts/zoom";
 
 /**
  * fn is call only when inputs change, not call on did mount
