@@ -8,6 +8,7 @@ import { Subitem } from '../Subitem';
 import { itemHeaderHeight, itemTextAreaHeight, itemSubItemHeight, portHeight, portWidth } from '../../utils/constanst';
 import { Pencil } from '../Pencil';
 import { Trash } from '../Trash';
+import { SvgProps } from '../Svg';
 
 export type ItemProps = {
     item: ItemType,
@@ -18,6 +19,7 @@ export type ItemProps = {
     onChangeClick: (item: ItemType) => void;
     showDeleteButton: boolean;
     onDeleteClick: (item: ItemType) => void;
+    setMainPortsByCenter: SvgProps['setMainPortsByCenter'];
 };
 
 export const Item: FC<ItemProps> = ({
@@ -28,7 +30,8 @@ export const Item: FC<ItemProps> = ({
     showChangeButton,
     onChangeClick,
     showDeleteButton,
-    onDeleteClick
+    onDeleteClick,
+    setMainPortsByCenter
 }) => {
 
     const [state, setState] = useState({x: item.x, y: item.y});
@@ -90,14 +93,21 @@ export const Item: FC<ItemProps> = ({
         window.addEventListener('mouseup', onMouseUp);
     }, [item, onMouseMove, onMouseUp]);
 
+    const itemHeight = useMemo(() => {
+        return getItemHeight(item);
+    }, [item.outputs]);
+
     const inputPortParams = useMemo(() => {
+        const y = setMainPortsByCenter
+            ? itemHeight / 2 - portHeight / 2
+            : itemHeaderHeight / 2 - portHeight / 2;
         return {
-            x: 0,
-            y: itemHeaderHeight / 2 - portHeight / 2,
+            x: 1,
+            y: y + 1,
             height: portHeight,
             width: portWidth
         }
-    }, []);
+    }, [itemHeight]);
 
     const inputPortData = useMemo(() => {
         return {
@@ -111,14 +121,17 @@ export const Item: FC<ItemProps> = ({
     }, [state.x, state.y, item.id, item.input, inputPortParams]);
 
     const outputPortParams = useMemo(() => {
+        const y = setMainPortsByCenter
+            ? itemHeight / 2 - portHeight / 2
+            : itemHeaderHeight / 2 - portHeight / 2;
         return {
-            x: item.width - portWidth,
-            y: itemHeaderHeight / 2 - portHeight / 2,
+            x: item.width - portWidth + 1,
+            y: y + 1,
             // y: 0,
             height: portHeight,
             width: portWidth
         }
-    }, []);
+    }, [itemHeight]);
 
     const outputPortData = useMemo(() => {
         return {
@@ -136,10 +149,6 @@ export const Item: FC<ItemProps> = ({
             return true;
         }
         return false;
-    }, [item.outputs]);
-
-    const itemHeight = useMemo(() => {
-        return getItemHeight(item);
     }, [item.outputs]);
 
     const [ showButtons, setShowButtons ] = useState(false);
@@ -171,6 +180,14 @@ export const Item: FC<ItemProps> = ({
         }
     }, [item.width]);
 
+    const InputPort = useMemo(() => {
+        return item.hideInput ? null : Port;
+    }, [item.hideInput]);
+
+    const OutputPort = useMemo(() => {
+        return item.hideOutput ? null : Port;
+    }, [item.hideOutput]);
+
     return (
         <>
         <svg
@@ -179,6 +196,20 @@ export const Item: FC<ItemProps> = ({
             x={state.x}
             y={state.y}
         >
+            <defs>
+                <clipPath id={`round-corner-${item.id}`}>
+                    <rect 
+                        x={1.5}
+                        y={itemHeaderHeight + 1 - 4}
+                        // x={0}
+                        // y={-4}
+                        width={item.width - 1}
+                        height={itemHeight - itemHeaderHeight + 4 - .5}
+                        rx={4}
+                        ry={4}
+                    />
+                </clipPath>
+            </defs>
             <g>
                 <rect
                     key={'main'}
@@ -186,11 +217,10 @@ export const Item: FC<ItemProps> = ({
                     ref={ref}
                     width={item.width}
                     height={itemHeight}
-                    rx={10}
-                    ry={10}
-                    r={10}
-                    x={0}
-                    y={0}
+                    rx={4}
+                    ry={4}
+                    x={1}
+                    y={1}
                     fill="#2e5b9f"
                     stroke="#000"
                     strokeWidth={1}
@@ -202,18 +232,6 @@ export const Item: FC<ItemProps> = ({
                     onMouseEnter={() => setShowButtons(true)}
                     onMouseLeave={() => setShowButtons(false)}
                 >
-                    <rect
-                        className={'rect'}
-                        ref={ref}
-                        width={item.width}
-                        height={itemHeaderHeight}
-                        r={10}
-                        rx={4}
-                        ry={4}
-                        fill="#2e5b9f"
-                        stroke="#000"
-                        strokeWidth={1}
-                    />
                     <foreignObject
                         {...headerProps}
                     >
@@ -246,56 +264,20 @@ export const Item: FC<ItemProps> = ({
                     />
                     {editButton}
                     {removeButton}
-                    <Port
-                        gProps={{
-                            onMouseDown: (e) => {
-                                onPortMouseDown(inputPortData.id, e)
-                            },
-                            onMouseUp: (e) => {
-                                onPortMouseUp(inputPortData.id, e)
-                            }
-                        }}
-                        portData={inputPortData}
-                        id={inputPortData.id}
-                        width={inputPortParams.width}
-                        height={inputPortParams.height}
-                        x={inputPortParams.x}
-                        y={inputPortParams.y}
-                    />
-                    <Port
-                        gProps={{
-                            onMouseDown: (e) => {
-                                onPortMouseDown(outputPortData.id, e)
-                            },
-                            onMouseUp: (e) => {
-                                onPortMouseUp(outputPortData.id, e)
-                            }
-                        }}
-                        portData={outputPortData}
-                        id={outputPortData.id}
-                        width={outputPortParams.width}
-                        height={outputPortParams.height}
-                        x={outputPortParams.x}
-                        y={outputPortParams.y}
-                        disabled={disableOutputPort}
-                    />
                 </svg>
                 <g
                     onMouseDown={(e) => e.stopPropagation()}
                 >
                     <rect
                         className={'rect'}
-                        ref={ref}
                         width={item.width}
-                        height={itemHeight - itemHeaderHeight}
-                        x={0}
-                        y={itemHeaderHeight}
-                        rx={4}
-                        ry={4}
-                        fill="#fff"
-                        stroke="#000"
-                        strokeWidth={1}
+                        height={itemHeight - itemHeaderHeight + 5}
+                        x={1}
+                        y={itemHeaderHeight + 1}
+                        clipPath={`url(#round-corner-${item.id})`}
+                        fill={'#fff'}
                     />
+                    <line x1={1} y1={itemHeaderHeight + 1} x2={item.width + 1} y2={itemHeaderHeight + 1} stroke="#000" />
                     <foreignObject
                         {...textProps}
                     >
@@ -332,6 +314,45 @@ export const Item: FC<ItemProps> = ({
                         }
                     </g>
                 </g>
+                {
+                    InputPort &&
+                    <InputPort
+                        gProps={{
+                            onMouseDown: (e) => {
+                                onPortMouseDown(inputPortData.id, e)
+                            },
+                            onMouseUp: (e) => {
+                                onPortMouseUp(inputPortData.id, e)
+                            }
+                        }}
+                        portData={inputPortData}
+                        id={inputPortData.id}
+                        width={inputPortParams.width}
+                        height={inputPortParams.height}
+                        x={inputPortParams.x}
+                        y={inputPortParams.y}
+                    />
+                }
+                {
+                    OutputPort &&
+                    <Port
+                        gProps={{
+                            onMouseDown: (e) => {
+                                onPortMouseDown(outputPortData.id, e)
+                            },
+                            onMouseUp: (e) => {
+                                onPortMouseUp(outputPortData.id, e)
+                            }
+                        }}
+                        portData={outputPortData}
+                        id={outputPortData.id}
+                        width={outputPortParams.width}
+                        height={outputPortParams.height}
+                        x={outputPortParams.x}
+                        y={outputPortParams.y}
+                        disabled={disableOutputPort}
+                    />
+                }
             </g>
         </svg>
         </>

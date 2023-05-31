@@ -60,10 +60,16 @@ export type SvgProps = {
     isLoading?: boolean;
 
     loadingText?: ReactNode;
+
+    /**
+     * set items ports to center by height, don't affects to subitems ports
+     */
+    setMainPortsByCenter?: boolean;
 };
 
 export const SVGWithZoom: FC<Omit<SvgProps, 'loadingText' | 'isLoading' | 'className' >> = ({
     items,
+    setMainPortsByCenter,
     onChange,
     onItemChangeClick,
     onItemDeleteClick,
@@ -315,6 +321,7 @@ export const SVGWithZoom: FC<Omit<SvgProps, 'loadingText' | 'isLoading' | 'class
                         onChangeClick={onItemChange}
                         showDeleteButton={!!onItemDeleteClick}
                         onDeleteClick={onItemDelete}
+                        setMainPortsByCenter={setMainPortsByCenter}
                     />
                 );
             })

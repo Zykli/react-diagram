@@ -31,7 +31,7 @@ export const Subitem: FC<Props> = ({
     const outputPortParams = useMemo(() => {
         return {
             x: itemWidth - 20 - portWidth,
-            y: itemSubItemHeight / 2 - portHeight / 2,
+            y: (itemSubItemHeight / 2 - portHeight / 2) + 1,
             height: portHeight,
             width: portWidth
         }
@@ -50,12 +50,16 @@ export const Subitem: FC<Props> = ({
 
     const textProps = useMemo(() => {
         return {
-            x: 5,
-            y: 4,
+            x: 6,
+            y: 5,
             height: itemSubItemHeight - 10,
             width: itemWidth - 20 - 20
         };
     }, []);
+
+    const OutputPort = useMemo(() => {
+        return data.hide ? null : Port;
+    }, [data.hide]);
 
     return (
         <g
@@ -70,8 +74,8 @@ export const Subitem: FC<Props> = ({
                     ref={subRef}
                     width={itemWidth - 20}
                     height={itemSubItemHeight}
-                    x={0}
-                    y={0}
+                    x={1}
+                    y={1}
                     rx={4}
                     ry={4}
                     fill="#fff"
@@ -92,22 +96,25 @@ export const Subitem: FC<Props> = ({
                         {data.text}
                     </div>
                 </foreignObject>
-                <Port
-                    gProps={{
-                        onMouseDown: (e) => {
-                            onPortMouseDown(portData.id, e)
-                        },
-                        onMouseUp: (e) => {
-                            onPortMouseUp(portData.id, e)
-                        }
-                    }}
-                    portData={portData}
-                    id={portData.id}
-                    width={outputPortParams.width}
-                    height={outputPortParams.height}
-                    x={outputPortParams.x}
-                    y={outputPortParams.y}
-                />
+                {
+                    OutputPort &&
+                    <OutputPort
+                        gProps={{
+                            onMouseDown: (e) => {
+                                onPortMouseDown(portData.id, e)
+                            },
+                            onMouseUp: (e) => {
+                                onPortMouseUp(portData.id, e)
+                            }
+                        }}
+                        portData={portData}
+                        id={portData.id}
+                        width={outputPortParams.width}
+                        height={outputPortParams.height}
+                        x={outputPortParams.x}
+                        y={outputPortParams.y}
+                    />
+                }
             </svg>
         </g>
     );
