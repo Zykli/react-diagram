@@ -123,7 +123,6 @@ export const items8 = JSON.parse(JSON.stringify({
             {
                 "id": "5",
                 "text": "Output 5",
-                "hide": true,
                 "connected": null
             }
         ]
@@ -132,7 +131,6 @@ export const items8 = JSON.parse(JSON.stringify({
         "id": "2",
         "type": "rect",
         "name": 'Item 2',
-        "hideOutput": true,
         "text": 'Description for item2',
         "x": 218.80398559570312,
         "y": 17.372941970825195,

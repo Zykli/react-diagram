@@ -47,7 +47,6 @@ function App() {
       <SVGReactDiagram
         isLoading={isLoading}
         items={isLoading ? {} : its}
-        // items={its}
         onChange={onChangeItems}
         onItemChangeClick={(item) => {
           console.log('item to change', item);
@@ -57,7 +56,6 @@ function App() {
           const confirm = window.confirm('Are you sure want to remove that item?');
           return confirm;
         }}
-        // setMainPortsByCenter
       />
     </div>
   );
