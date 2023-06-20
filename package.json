@@ -1,6 +1,6 @@
 {
   "name": "react-mutliple-diagram",
-  "version": "0.17.8",
+  "version": "0.17.9",
   "main": "./lib/index-lib.js",
   "author": {
     "name": "Zykli",
@@ -17,13 +17,14 @@
     "react-svg-pan-zoom": "^3.12.1"
   },
   "scripts": {
-    "clear": "rm -r lib",
+    "clear": "rm -r -f lib",
     "copyCss": "npx cpy src/**/*.css !**/App.css !**/index.css ./lib --parents",
     "compile": "npm run clear && npx tsc && npm run copyCss",
     "publishNew": "npm run compile && npx publish",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "buildDemo": "set \"PUBLIC_URL=/react-diagram/demo/\" && set \"BUILD_PATH=demo\" && react-scripts build",
+    "demoUpdate": "npm run buildDemo",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
