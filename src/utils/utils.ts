@@ -25,7 +25,7 @@ export const getDataFromId = (portId: string): PortData => {
     };
 };
 
-export function getAbsoluteXY (element: SVGSVGElement) {
+function getAbsoluteXY (element: SVGSVGElement) {
     let viewportElement = document.documentElement
     let box = element.getBoundingClientRect()
     let scrollLeft = viewportElement.scrollLeft
