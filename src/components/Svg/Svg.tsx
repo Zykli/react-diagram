@@ -1,4 +1,4 @@
-import { cloneDeep, fromPairs, keyBy, toPairs } from "lodash";
+import { cloneDeep, fromPairs, keyBy, toPairs, flattenDeep } from "lodash";
 import React, { ComponentProps, FC, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Path } from "../Path";
 import { PortsContext } from "../../contexts/ports";
@@ -6,6 +6,7 @@ import { Item as ItemType } from "../../utils/types";
 import { convertXYtoViewPort, getDataFromId, getInputId, prepareConnectionsFromItems } from "../../utils/utils";
 import { Item } from "../Item";
 import { Omit } from '../../utils/utils.types';
+import { useDidUpdateEffect } from "../../utils/hooks";
 
 export type DiagramItemsType = {[key: string]: ItemType};
 
@@ -78,22 +79,60 @@ export const SVGWithZoom: FC<Omit<SvgProps, 'loadingText' | 'isLoading' | 'class
 }) => {
 
     const itsRef = useRef(items);
-    useEffect(() => {
-        itsRef.current = items;
-    }, [items]);
+    itsRef.current = items;
     
     const { ports, changePorts, setPorts } = useContext(PortsContext);
     const portsRef = useRef(ports);
-    useEffect(() => {
-        // console.log('ports', ports);
-        portsRef.current = ports;
-    }, [ports]);
+    portsRef.current = ports;
 
     const [ initedNewPath, setInitedNewPath ] = useState('');
     const newPathRef = useRef(initedNewPath);
-    useEffect(() => {
-        newPathRef.current = initedNewPath;
-    }, [initedNewPath]);
+    newPathRef.current = initedNewPath;
+
+    useDidUpdateEffect(() => {
+        const newPorts = flattenDeep(toPairs(items).map(([_, item]) => {
+            const idOutput = `${item.id}/output`;
+            const idInput = `${item.id}/input`;
+            return [
+                {
+                    id: idInput,
+                    connected: item.input && `${item.input}/output`
+                },
+                {
+                    id: idOutput,
+                    connected: item.output && `${item.output}/input`
+                },
+                ...(item.outputs || []).map(el => {
+                    const idOutputSubitem = `${item.id}/output/${el.id}`;
+                    return {
+                        id: idOutputSubitem,
+                        connected: el.connected && `${el.connected}/input`
+                    };
+                })
+            ]
+        }));
+        const changed = newPorts.reduce((a, c) => a ? a : c.connected !== portsRef.current[c.id]?.connected, false);
+        if(changed) {
+            const newPortsDictionary = fromPairs(Object.values(newPorts).map(item => [item.id, item]))
+            changePorts({
+                ...fromPairs(toPairs(portsRef.current).map(([id, item]) => {
+                    console.log(id)
+                    if(!newPortsDictionary[id]) return [id, item];
+                    return [
+                        id,
+                        {
+                            ...item,
+                            connected: newPortsDictionary[id].connected
+                        }
+                    ]
+                }))
+            });
+        }
+    }, [items]);
+
+    // useEffect(() => {
+    //     console.log('ports', ports);
+    // }, [ports]);
 
     const removePath = useCallback<ComponentProps<typeof Path>['onRemove']>((from, to) => {
         const portsDatas = [ getDataFromId(from), getDataFromId(to) ];

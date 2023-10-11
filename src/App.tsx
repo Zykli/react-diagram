@@ -1,15 +1,18 @@
-import React, { ComponentProps, useCallback, useEffect, useState } from 'react';
+import React, { ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
 import { SVGReactDiagram } from './components/Diagram';
 import { items8 } from './test2/mock';
 import { items8 as itemsNull } from './test2/mock.null';
+import { fromPairs, toPairs } from 'lodash';
 
 const items = items8;
 // const items = itemsNull;
 
 function App() {
 
-  const [ its, setIts ] = useState({});
+  const [ its, setIts ] = useState<any>({});
+  const itemsRef = useRef(its);
+  itemsRef.current = its;
   // const [ its, setIts ] = useState(items);
 
   const [ isLoading, setIsLoading ] = useState(true);
@@ -42,6 +45,25 @@ function App() {
     setIts(newItems);
   }, []);
 
+  const drop = useCallback(() => {
+    setIts(fromPairs(toPairs(itemsRef.current).map(([id, item]: [string, any]) => {
+      return [
+        id,
+        {
+          ...item,
+          input: null,
+          output: null,
+          outputs: item?.outputs?.map(el => {
+            return {
+              ...el,
+              connected: null
+            }
+          })
+        }
+      ];
+    })));
+  }, []);
+
   return (
     <div className="App">
       <SVGReactDiagram
@@ -57,6 +79,13 @@ function App() {
           return confirm;
         }}
       />
+      <button
+        onClick={() => {
+          drop();
+        }}
+      >
+        drop
+      </button>
     </div>
   );
 }

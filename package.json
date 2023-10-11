@@ -1,6 +1,6 @@
 {
   "name": "react-mutliple-diagram",
-  "version": "0.17.9",
+  "version": "0.18.0",
   "main": "./lib/index-lib.js",
   "author": {
     "name": "Zykli",
