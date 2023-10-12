@@ -116,7 +116,6 @@ export const SVGWithZoom: FC<Omit<SvgProps, 'loadingText' | 'isLoading' | 'class
             const newPortsDictionary = fromPairs(Object.values(newPorts).map(item => [item.id, item]))
             changePorts({
                 ...fromPairs(toPairs(portsRef.current).map(([id, item]) => {
-                    console.log(id)
                     if(!newPortsDictionary[id]) return [id, item];
                     return [
                         id,
